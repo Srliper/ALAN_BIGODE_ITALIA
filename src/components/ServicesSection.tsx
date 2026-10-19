@@ -9,6 +9,7 @@ interface Service {
   priceValue: number;
   duration: string;
   image: string;
+  badge?: string;
 }
 
 const services: Service[] = [
@@ -60,6 +61,15 @@ const services: Service[] = [
     duration: '40 min',
     image: 'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=600&h=400&fit=crop',
   },
+  {
+    id: 'manutencao-semanal',
+    name: 'Manutenção Semanal',
+    description: 'Acabamento toda semana: pezinho, contorno e barba alinhada para o corte sempre em dia',
+    priceValue: 20,
+    duration: '20 min',
+    image: 'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=600&h=400&fit=crop',
+    badge: 'Semanal',
+  },
 ];
 
 const ServicesSection = () => {
@@ -74,7 +84,12 @@ const ServicesSection = () => {
               key={service.id}
               className="group bg-gradient-card rounded-2xl border border-primary/20 hover:border-primary/60 transition-all duration-500 hover:-translate-y-2 overflow-hidden flex flex-col"
             >
-              <div className="h-48 overflow-hidden bg-secondary">
+              <div className="h-48 overflow-hidden bg-secondary relative">
+                {service.badge && (
+                  <span className="absolute top-3 left-3 z-10 bg-gradient-gold text-primary-foreground text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full shadow-lg">
+                    {service.badge}
+                  </span>
+                )}
                 <img
                   src={service.image}
                   alt={service.name}

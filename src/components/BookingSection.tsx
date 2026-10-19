@@ -21,7 +21,7 @@ interface BookingData {
 
 const emptyForm: BookingData = { name: '', phone: '', service: '', cutType: '', date: '', time: '', notes: '' };
 
-const cutTypes = ['Clássico', 'Moderno', 'Fade', 'Degradê', 'Social', 'Militar', 'Raspado', 'Outro (descrever nas observações)'];
+const cutTypes = ['Manter o corte atual', 'Clássico', 'Moderno', 'Fade', 'Degradê', 'Social', 'Militar', 'Raspado', 'Outro (descrever nas observações)'];
 
 const timeSlots = [
   '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
@@ -122,6 +122,7 @@ const BookingSection = () => {
       `*Tipo de corte:* ${formData.cutType}`,
       `*Data:* ${date}`,
       `*Horário:* ${formData.time}`,
+      ...(selectedService?.badge === 'Semanal' ? ['*Frequência:* toda semana, no mesmo dia e horário'] : []),
       ...(formData.notes.trim() ? [`*Observações:* ${formData.notes.trim()}`] : []),
     ].join('\n');
 
@@ -269,6 +270,9 @@ const BookingSection = () => {
                 <span className="flex items-center gap-2 text-foreground">
                   <CalendarCheck className="w-5 h-5 text-primary" /> {selectedService.name}
                 </span>
+                {selectedService.badge === 'Semanal' && (
+                  <span className="text-xs text-muted-foreground">repete toda semana</span>
+                )}
                 <span className="font-bold text-primary text-lg">{formatPrice(selectedService.priceValue)}</span>
               </div>
             )}
