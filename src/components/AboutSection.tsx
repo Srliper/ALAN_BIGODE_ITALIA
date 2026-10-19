@@ -1,56 +1,56 @@
-import { Check } from 'lucide-react';
+import { Armchair, Sparkles, UserCheck, Award } from 'lucide-react';
+import SectionHeading from './SectionHeading';
 
 const features = [
-  'Ambiente premium e acolhedor',
-  'Produtos premium de alta qualidade',
-  'Atendimento exclusivo e personalizado',
-  'Barbeiros especialistas certificados',
+  { icon: Armchair, title: 'Ambiente acolhedor', text: 'Um espaço pensado para você relaxar.' },
+  { icon: Sparkles, title: 'Produtos premium', text: 'Só usamos marcas de alta qualidade.' },
+  { icon: UserCheck, title: 'Atendimento exclusivo', text: 'Cada cliente com atenção total.' },
+  { icon: Award, title: 'Barbeiros especialistas', text: 'Técnica clássica e tendências atuais.' },
 ];
 
 const AboutSection = () => {
   return (
-    <section id="about" className="py-24 relative overflow-hidden" style={{ background: 'var(--about-bg)' }}>
-      {/* Background effects */}
-      <div className="absolute inset-0 opacity-30">
-        <div className="absolute top-1/4 left-1/2 w-96 h-96 bg-primary/10 rounded-full blur-3xl transform -translate-x-1/2" />
-      </div>
-
+    <section id="about" className="py-24 relative overflow-hidden section-alt">
       <div className="container mx-auto px-4 relative z-10">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold text-gradient-gold mb-8">
-            Sobre a Barbearia Italia
-          </h2>
-          <div className="w-20 h-1 bg-gradient-gold mx-auto mb-10" />
-
-          <div className="space-y-6 text-muted-foreground text-lg leading-relaxed mb-12">
-            <p>
-              Na Barbearia Italia, acreditamos que cada corte é uma obra de arte única. 
-              Nossa missão vai além de simplesmente cortar cabelo - criamos experiências 
-              transformadoras que elevam sua confiança e estilo.
-            </p>
-            <p>
-              Com anos de dedicação e paixão pela arte da barbearia, nossos mestres barbeiros 
-              combinam técnicas tradicionais com as tendências mais modernas. Cada visita é 
-              uma oportunidade de renovação, não apenas do visual, mas também do espírito.
-            </p>
-            <p>
-              Aqui, você não é apenas um cliente - você é parte da família Italia. 
-              Valorizamos cada momento, cada detalhe e cada conversa que torna sua 
-              experiência verdadeiramente especial.
-            </p>
+        <div className="grid lg:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
+          <div className="relative">
+            <img
+              src="https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=900&q=75"
+              alt="Barbeiro trabalhando na Barbearia Italia"
+              loading="lazy"
+              className="rounded-2xl w-full aspect-[4/5] object-cover border border-primary/30"
+            />
+            <div className="absolute -bottom-6 -right-2 md:-right-6 bg-gradient-gold text-primary-foreground rounded-2xl px-6 py-4 shadow-xl">
+              <p className="font-display text-3xl font-bold leading-none">100%</p>
+              <p className="text-sm font-semibold">dedicação em cada corte</p>
+            </div>
           </div>
 
-          {/* Features */}
-          <div className="flex flex-wrap justify-center gap-6">
-            {features.map((feature, index) => (
-              <div
-                key={index}
-                className="flex items-center gap-3 bg-secondary/30 px-6 py-3 rounded-full border border-primary/20"
-              >
-                <Check className="w-5 h-5 text-primary flex-shrink-0" />
-                <span className="text-foreground">{feature}</span>
-              </div>
-            ))}
+          <div>
+            <SectionHeading eyebrow="Nossa história" title="Sobre a Barbearia Italia" align="left" />
+
+            <div className="space-y-5 text-muted-foreground text-lg leading-relaxed mb-10">
+              <p>
+                Na Barbearia Italia, acreditamos que cada corte é uma obra de arte única. Nossa missão vai além de
+                simplesmente cortar cabelo — criamos experiências que elevam sua confiança e estilo.
+              </p>
+              <p>
+                Nossos barbeiros combinam técnicas tradicionais com as tendências mais modernas. Aqui, você não é
+                apenas um cliente — você é parte da família Italia.
+              </p>
+            </div>
+
+            <div className="grid sm:grid-cols-2 gap-4">
+              {features.map(({ icon: Icon, title, text }) => (
+                <div key={title} className="flex gap-3 p-4 rounded-xl bg-secondary/40 border border-primary/15">
+                  <Icon className="w-6 h-6 text-primary shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-semibold text-foreground">{title}</p>
+                    <p className="text-sm text-muted-foreground">{text}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
