@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import SectionHeading from './SectionHeading';
 
@@ -14,21 +14,42 @@ const galleryItems = [
 
 const GallerySection = () => {
   const [active, setActive] = useState<number | null>(null);
+  const isOpen = active !== null;
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    if (active === null) return;
+    if (!isOpen) return;
+    // Ao abrir, o foco vai para o "Fechar"; ao fechar, volta para a foto que foi clicada
+    const opener = document.activeElement as HTMLElement | null;
+    closeRef.current?.focus();
+
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setActive(null);
       if (e.key === 'ArrowRight') setActive((i) => (i! + 1) % galleryItems.length);
       if (e.key === 'ArrowLeft') setActive((i) => (i! - 1 + galleryItems.length) % galleryItems.length);
+      // Mantém o Tab circulando dentro da foto ampliada
+      if (e.key === 'Tab' && dialogRef.current) {
+        const focusable = dialogRef.current.querySelectorAll<HTMLElement>('button');
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     };
     document.addEventListener('keydown', onKey);
     document.body.style.overflow = 'hidden';
     return () => {
       document.removeEventListener('keydown', onKey);
       document.body.style.overflow = '';
+      opener?.focus();
     };
-  }, [active]);
+  }, [isOpen]);
 
   return (
     <section id="gallery" className="py-24 relative overflow-hidden">
@@ -64,13 +85,19 @@ const GallerySection = () => {
 
       {active !== null && (
         <div
+          ref={dialogRef}
           className="fixed inset-0 z-[60] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in"
           onClick={() => setActive(null)}
           role="dialog"
           aria-modal="true"
           aria-label={galleryItems[active].title}
         >
-          <button className="absolute top-5 right-5 text-foreground p-2" aria-label="Fechar" onClick={() => setActive(null)}>
+          <button
+            ref={closeRef}
+            className="absolute top-5 right-5 text-foreground p-2"
+            aria-label="Fechar"
+            onClick={() => setActive(null)}
+          >
             <X className="w-8 h-8" />
           </button>
           <button
