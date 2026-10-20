@@ -6,8 +6,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
 import SectionHeading from './SectionHeading';
-import { services } from './ServicesSection';
-import { business, formatPrice, whatsappLink } from '@/config';
+import { services, formatDuration } from '@/data/services';
+import { business, closedDaysLabel, formatPrice, toMinutes, whatsappLink } from '@/config';
+import { trackEvent } from '@/lib/analytics';
 
 interface BookingData {
   name: string;
@@ -23,12 +24,18 @@ const emptyForm: BookingData = { name: '', phone: '', service: '', cutType: '', 
 
 const cutTypes = ['Manter o corte atual', 'Clássico', 'Moderno', 'Fade', 'Degradê', 'Social', 'Militar', 'Raspado', 'Outro (descrever nas observações)'];
 
-const timeSlots = [
-  '08:30', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
-  '12:00', '12:30', '13:00', '13:30', '14:00', '14:30', '15:00',
-  '15:30', '16:00', '16:30', '17:00', '17:30', '18:00', '18:30',
-  '19:00', '19:30', '20:00', '20:30',
-];
+const SLOT_INTERVAL = 30;
+
+const toTime = (minutes: number) =>
+  `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`;
+
+// Horários de 30 em 30 min desde a abertura, terminando (com a duração do serviço) até o fechamento
+const buildSlots = (durationMinutes: number) => {
+  const slots: string[] = [];
+  const close = toMinutes(business.closeTime);
+  for (let t = toMinutes(business.openTime); t + durationMinutes <= close; t += SLOT_INTERVAL) slots.push(toTime(t));
+  return slots;
+};
 
 // 'YYYY-MM-DD' interpretado no fuso local (new Date('YYYY-MM-DD') usa UTC e erra o dia da semana no Brasil)
 const parseLocalDate = (dateStr: string) => {
@@ -63,18 +70,24 @@ const BookingSection = () => {
 
   const today = toISODate(new Date());
 
+  const selectedService = services.find((s) => s.id === formData.service);
+
   const availableSlots = useMemo(() => {
-    if (formData.date !== today) return timeSlots;
+    // Sem serviço escolhido, usa o mais curto para não esconder horários à toa
+    const duration = selectedService?.durationMinutes ?? Math.min(...services.map((s) => s.durationMinutes));
+    const slots = buildSlots(duration);
+    if (formData.date !== today) return slots;
     const now = new Date();
     const nowMinutes = now.getHours() * 60 + now.getMinutes();
-    return timeSlots.filter((t) => {
-      const [h, m] = t.split(':').map(Number);
-      return h * 60 + m > nowMinutes + 30;
-    });
-  }, [formData.date, today]);
+    return slots.filter((t) => toMinutes(t) > nowMinutes + 30);
+  }, [formData.date, today, selectedService]);
+
+  // Trocar de serviço pode tirar o horário escolhido da lista (ex.: serviço longo no fim do dia)
+  useEffect(() => {
+    if (formData.time && !availableSlots.includes(formData.time)) set('time', '');
+  }, [availableSlots, formData.time]);
 
   const isClosedDay = formData.date !== '' && !business.openDays.includes(parseLocalDate(formData.date).getDay());
-  const selectedService = services.find((s) => s.id === formData.service);
 
   const handleDateChange = (value: string) => {
     setFormData((f) => ({ ...f, date: value, time: '' }));
@@ -100,7 +113,7 @@ const BookingSection = () => {
     if (isClosedDay) {
       toast({
         title: 'Data indisponível',
-        description: 'Não abrimos domingo e segunda-feira. Funcionamos de terça a sábado.',
+        description: `Estamos fechados neste dia (${closedDaysLabel}). ${business.hoursLabel}.`,
         variant: 'destructive',
       });
       return;
@@ -126,6 +139,7 @@ const BookingSection = () => {
       ...(formData.notes.trim() ? [`*Observações:* ${formData.notes.trim()}`] : []),
     ].join('\n');
 
+    trackEvent('agendamento_whatsapp', { servico: selectedService?.name ?? '' });
     window.open(whatsappLink(message), '_blank', 'noopener,noreferrer');
 
     toast({
@@ -231,7 +245,7 @@ const BookingSection = () => {
                 required
               />
               <p id="date-help" className={`text-xs ${isClosedDay ? 'text-destructive' : 'text-muted-foreground'}`}>
-                {isClosedDay ? 'Fechado neste dia — escolha de terça a sábado.' : business.hoursLabel}
+                {isClosedDay ? `Fechado neste dia (${closedDaysLabel}). ${business.hoursLabel}.` : business.hoursLabel}
               </p>
             </div>
 
@@ -269,6 +283,7 @@ const BookingSection = () => {
               <div className="md:col-span-2 flex items-center justify-between p-4 rounded-xl bg-primary/10 border border-primary/30">
                 <span className="flex items-center gap-2 text-foreground">
                   <CalendarCheck className="w-5 h-5 text-primary" /> {selectedService.name}
+                  <span className="text-xs text-muted-foreground">({formatDuration(selectedService.durationMinutes)})</span>
                 </span>
                 {selectedService.badge === 'Semanal' && (
                   <span className="text-xs text-muted-foreground">repete toda semana</span>

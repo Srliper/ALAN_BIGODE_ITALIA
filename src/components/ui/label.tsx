@@ -1,7 +1,7 @@
 import React from 'react';
 
 export const Label = (props: React.LabelHTMLAttributes<HTMLLabelElement>) => {
-  const { className = '', children, ...rest } = props as any;
+  const { className = '', children, ...rest } = props;
   return (
     <label {...rest} className={`block text-sm font-medium text-foreground ${className}`}>
       {children}

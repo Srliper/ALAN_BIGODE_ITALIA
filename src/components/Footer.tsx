@@ -1,4 +1,4 @@
-import { Crown, MessageCircle, MapPin } from 'lucide-react';
+import { Crown, MessageCircle, MapPin, Instagram } from 'lucide-react';
 import { business, whatsappLink } from '@/config';
 
 const Footer = () => {
@@ -16,14 +16,27 @@ const Footer = () => {
             </p>
           </div>
 
-          <a
-            href={whatsappLink()}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 text-sm font-semibold text-primary border border-primary/40 rounded-full px-5 py-2 hover:bg-primary/10 transition-colors"
-          >
-            <MessageCircle className="w-4 h-4" /> {business.phoneDisplay}
-          </a>
+          <div className="flex items-center gap-3">
+            {business.instagram && (
+              <a
+                href={business.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                className="w-10 h-10 flex items-center justify-center text-primary border border-primary/40 rounded-full hover:bg-primary/10 transition-colors"
+              >
+                <Instagram className="w-4 h-4" />
+              </a>
+            )}
+            <a
+              href={whatsappLink()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-sm font-semibold text-primary border border-primary/40 rounded-full px-5 py-2 hover:bg-primary/10 transition-colors"
+            >
+              <MessageCircle className="w-4 h-4" /> {business.phoneDisplay}
+            </a>
+          </div>
         </div>
 
         <p className="text-muted-foreground text-xs text-center mt-8 pt-6 border-t border-border">

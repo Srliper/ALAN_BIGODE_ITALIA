@@ -1,76 +1,7 @@
 import { Clock } from 'lucide-react';
 import SectionHeading from './SectionHeading';
 import { formatPrice } from '@/config';
-
-interface Service {
-  id: string;
-  name: string;
-  description: string;
-  priceValue: number;
-  duration: string;
-  image: string;
-  badge?: string;
-}
-
-const services: Service[] = [
-  {
-    id: 'corte',
-    name: 'Corte de Cabelo',
-    description: 'Cortes modernos e clássicos para todos os estilos',
-    priceValue: 35,
-    duration: '40 min',
-    image: 'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=600&h=400&fit=crop',
-  },
-  {
-    id: 'barba',
-    name: 'Barba',
-    description: 'Design e acabamento profissional com toalha quente',
-    priceValue: 25,
-    duration: '30 min',
-    image: 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=600&h=400&fit=crop',
-  },
-  {
-    id: 'corte-barba',
-    name: 'Corte + Barba',
-    description: 'Pacote completo de estilo — o favorito da casa',
-    priceValue: 50,
-    duration: '1h10',
-    image: 'https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=600&h=400&fit=crop',
-  },
-  {
-    id: 'fade',
-    name: 'Fade',
-    description: 'O corte mais pedido do momento, com degradê perfeito',
-    priceValue: 40,
-    duration: '45 min',
-    image: 'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=600&h=400&fit=crop',
-  },
-  {
-    id: 'coloracao',
-    name: 'Coloração',
-    description: 'Transforme seu visual com cores e luzes',
-    priceValue: 80,
-    duration: '1h30',
-    image: 'https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&h=400&fit=crop',
-  },
-  {
-    id: 'tratamento',
-    name: 'Tratamento Capilar',
-    description: 'Hidratação, nutrição e reconstrução profissional',
-    priceValue: 45,
-    duration: '40 min',
-    image: 'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=600&h=400&fit=crop',
-  },
-  {
-    id: 'manutencao-semanal',
-    name: 'Manutenção Semanal',
-    description: 'Acabamento toda semana: pezinho, contorno e barba alinhada para o corte sempre em dia',
-    priceValue: 20,
-    duration: '20 min',
-    image: 'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=600&h=400&fit=crop',
-    badge: 'Semanal',
-  },
-];
+import { services, formatDuration } from '@/data/services';
 
 const ServicesSection = () => {
   return (
@@ -106,10 +37,10 @@ const ServicesSection = () => {
                 <p className="text-muted-foreground mb-6 flex-1">{service.description}</p>
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                    <Clock className="w-4 h-4 text-primary" /> {service.duration}
+                    <Clock className="w-4 h-4 text-primary" /> {formatDuration(service.durationMinutes)}
                   </span>
                   <a
-                    href={`#booking`}
+                    href="#booking"
                     onClick={() => window.dispatchEvent(new CustomEvent('select-service', { detail: service.id }))}
                     className="text-sm font-semibold text-primary border border-primary/40 rounded-full px-4 py-1.5 hover:bg-primary hover:text-primary-foreground transition-colors"
                   >
@@ -126,5 +57,3 @@ const ServicesSection = () => {
 };
 
 export default ServicesSection;
-export { services };
-export type { Service };

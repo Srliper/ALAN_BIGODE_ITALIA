@@ -1,6 +1,6 @@
-import { Phone, MapPin, Clock, MessageCircle } from 'lucide-react';
+import { Phone, MapPin, Clock, MessageCircle, Instagram } from 'lucide-react';
 import SectionHeading from './SectionHeading';
-import { business, whatsappLink } from '@/config';
+import { business, closedDaysLabel, whatsappLink } from '@/config';
 
 const contactInfo = [
   {
@@ -21,10 +21,20 @@ const contactInfo = [
     content: `${business.address}\n${business.city} — CEP ${business.cep}`,
     href: business.mapsUrl,
   },
+  ...(business.instagram
+    ? [
+        {
+          icon: Instagram,
+          title: 'Instagram',
+          content: '@' + business.instagram.replace(/\/+$/, '').split('/').pop(),
+          href: business.instagram,
+        },
+      ]
+    : []),
   {
     icon: Clock,
     title: 'Horário de funcionamento',
-    content: `${business.hoursLabel}\nDomingo e segunda: fechado`,
+    content: `${business.hoursLabel}\n${closedDaysLabel.charAt(0).toUpperCase()}${closedDaysLabel.slice(1)}: fechado`,
     href: null,
   },
 ];
