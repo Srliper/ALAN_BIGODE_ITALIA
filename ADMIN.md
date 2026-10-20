@@ -1,0 +1,47 @@
+# Painel admin (`/admin`)
+
+No painel, a barbearia altera sozinha, sem mexer no código:
+
+- **Serviços e preços:** nome, preço, duração, descrição, foto, selo (ex.: "Promoção") e se o serviço aparece no site
+- **Tipos de corte** do formulário de agendamento
+- **Galeria:** envio de fotos dos cortes reais direto do celular (as fotos são reduzidas automaticamente)
+
+As alterações aparecem no site na hora, sem novo deploy.
+
+## Não existe senha padrão
+
+Por segurança, nenhuma senha fica no código. Quem cria o login e a senha é o dono da barbearia, no passo 4
+abaixo, e só ele sabe qual é. Se esquecer, é só trocar no Supabase (Authentication → Users → ⋯ → Reset password,
+ou apagar e criar o usuário de novo).
+
+## Configuração (uma vez só, ~10 minutos)
+
+1. **Crie uma conta gratuita** em <https://supabase.com> e clique em **New project**.
+   Nome: `barbearia-italia`. Região: **South America (São Paulo)**. Guarde a senha do banco
+   (ela não é a senha do painel).
+2. **Crie as tabelas:** no projeto, abra **SQL Editor → New query**, cole todo o conteúdo de
+   [`supabase/schema.sql`](supabase/schema.sql) e clique em **Run**. Isso cria as tabelas, o espaço para as fotos
+   e copia os serviços, cortes e fotos que o site tem hoje.
+3. **Bloqueie novos cadastros:** **Authentication → Sign In / Providers →** desligue
+   **"Allow new users to sign up"**. ⚠️ Esse passo é obrigatório: sem ele, qualquer pessoa poderia criar uma
+   conta e alterar o site.
+4. **Crie o login do dono:** **Authentication → Users → Add user → Create new user**. Informe o e-mail e a senha
+   que vão ser usados no painel e marque **Auto Confirm User**.
+5. **Ligue o site ao Supabase:** em **Project Settings → API** (ou **Data API**), copie a **Project URL** e a
+   chave **anon public**. Na Vercel, abra o projeto → **Settings → Environment Variables** e adicione:
+
+   | Nome | Valor |
+   |---|---|
+   | `VITE_SUPABASE_URL` | a Project URL (ex.: `https://abcd1234.supabase.co`) |
+   | `VITE_SUPABASE_ANON_KEY` | a chave anon public |
+
+   A chave *anon* é pública por natureza (fica no navegador); a segurança vem das regras criadas no passo 2.
+   **Nunca** use a chave `service_role` aqui.
+6. **Faça um novo deploy** na Vercel (Deployments → ⋯ → Redeploy) e acesse `https://SEU-SITE/admin`.
+
+Para rodar localmente com o painel, crie um arquivo `.env.local` com as mesmas duas variáveis.
+
+## Sem configurar
+
+Enquanto as variáveis não existirem, o site funciona normalmente com os dados de `src/data/` e o `/admin`
+mostra um aviso explicando estes passos.

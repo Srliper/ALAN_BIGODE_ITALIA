@@ -2,7 +2,7 @@ import { defineConfig, type HtmlTagDescriptor, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import { business } from './src/config';
-import { services } from './src/data/services';
+import { defaultServices as services } from './src/data/services';
 
 const schemaDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -66,7 +66,7 @@ const seo = (): Plugin => {
 
       emit(
         'robots.txt',
-        `User-agent: *\nAllow: /\n${business.siteUrl ? `\nSitemap: ${business.siteUrl}/sitemap.xml\n` : ''}`,
+        `User-agent: *\nAllow: /\nDisallow: /admin\n${business.siteUrl ? `\nSitemap: ${business.siteUrl}/sitemap.xml\n` : ''}`,
       );
       if (business.siteUrl) {
         emit(

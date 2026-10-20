@@ -1,9 +1,11 @@
 import { Clock } from 'lucide-react';
 import SectionHeading from './SectionHeading';
 import { formatPrice } from '@/config';
-import { services, formatDuration } from '@/data/services';
+import { formatDuration } from '@/data/services';
+import { useSiteData } from '@/context/SiteData';
 
 const ServicesSection = () => {
+  const { services } = useSiteData();
   return (
     <section id="services" className="py-24 relative overflow-hidden section-alt">
       <div className="container mx-auto px-4 relative z-10">
@@ -21,12 +23,14 @@ const ServicesSection = () => {
                     {service.badge}
                   </span>
                 )}
-                <img
-                  src={service.image}
-                  alt={service.name}
-                  className="w-full h-full object-cover brightness-75 group-hover:brightness-95 group-hover:scale-105 transition-all duration-500"
-                  loading="lazy"
-                />
+                {service.image && (
+                  <img
+                    src={service.image}
+                    alt={service.name}
+                    className="w-full h-full object-cover brightness-75 group-hover:brightness-95 group-hover:scale-105 transition-all duration-500"
+                    loading="lazy"
+                  />
+                )}
               </div>
 
               <div className="p-6 flex flex-col flex-1">
