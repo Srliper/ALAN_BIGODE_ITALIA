@@ -1,6 +1,6 @@
 import { Phone, MapPin, Clock, MessageCircle, Instagram } from 'lucide-react';
 import SectionHeading from './SectionHeading';
-import { business, closedDaysLabel, whatsappLink } from '@/config';
+import { business, closedDaysLabel, instagramHandle, whatsappLink } from '@/config';
 
 const contactInfo = [
   {
@@ -26,7 +26,7 @@ const contactInfo = [
         {
           icon: Instagram,
           title: 'Instagram',
-          content: '@' + business.instagram.replace(/\/+$/, '').split('/').pop(),
+          content: instagramHandle(business.instagram),
           href: business.instagram,
         },
       ]

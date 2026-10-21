@@ -28,9 +28,12 @@ Legenda: ✅ feito · 🔧 você precisa fazer · 📋 precisa de material/decis
 - 📋 Fotos reais de cada serviço → painel, aba Serviços → "Trocar foto"
 - 📋 Foto do hero (topo) e da seção "Sobre" → me mandar os arquivos
 - 📋 Imagem de compartilhamento no WhatsApp (1200×630) → salvar em `public/og.jpg` e trocar `ogImage` no config
-- 📋 Seção da equipe: nome, foto e especialidade de cada barbeiro
+- ✅ Seção "Nossa Equipe" no site, com o Alan Bedim como dono (coroa + Instagram @alan70bedim)
+- ✅ Aba Equipe no painel e cartão do dono no topo
+- 📋 Foto do Alan e texto sobre ele → painel, aba Equipe (o nome "Alan Bedim" pode ser corrigido lá)
+- 📋 Outros barbeiros → painel, aba Equipe → "Adicionar pessoa"
 - 📋 Depoimentos ou link das avaliações no Google
-- 📋 Link do Instagram → campo `instagram` em `src/config.ts`
+- ✅ Instagram da barbearia (@barbearia_bigode_italia) no rodapé, no contato e nos dados do Google
 
 ## SEO e métricas
 - ✅ JSON-LD, robots.txt, sitemap.xml e manifest gerados a partir do config
@@ -48,5 +51,5 @@ Legenda: ✅ feito · 🔧 você precisa fazer · 📋 precisa de material/decis
 - ✅ Removido react-router-dom (site mais leve); painel carregado só em `/admin`
 - ✅ Galeria ampliada acessível por teclado
 - ✅ ESLint, typecheck e CI no GitHub Actions
-- ✅ 29 testes automáticos do site e do painel (computador e celular)
+- ✅ 33 testes automáticos do site e do painel (computador e celular)
 - 🔧 Horário de funcionamento e telefone continuam em `src/config.ts` (não estão no painel)

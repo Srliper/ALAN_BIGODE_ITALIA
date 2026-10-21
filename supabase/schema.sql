@@ -28,9 +28,21 @@ create table if not exists public.gallery (
   sort int not null default 0
 );
 
+create table if not exists public.team (
+  id bigint generated always as identity primary key,
+  name text not null,
+  role text not null default 'Barbeiro',
+  bio text not null default '',
+  instagram text not null default '',
+  photo_url text not null default '',
+  storage_path text,
+  sort int not null default 0
+);
+
 alter table public.services enable row level security;
 alter table public.cut_types enable row level security;
 alter table public.gallery enable row level security;
+alter table public.team enable row level security;
 
 -- Leitura pública (o site) e escrita só para usuários logados (o painel).
 -- IMPORTANTE: desative o cadastro público em Authentication → Sign In / Providers → "Allow new users to sign up".
@@ -46,6 +58,10 @@ drop policy if exists "leitura publica" on public.gallery;
 create policy "leitura publica" on public.gallery for select using (true);
 drop policy if exists "admin altera" on public.gallery;
 create policy "admin altera" on public.gallery for all to authenticated using (true) with check (true);
+drop policy if exists "leitura publica" on public.team;
+create policy "leitura publica" on public.team for select using (true);
+drop policy if exists "admin altera" on public.team;
+create policy "admin altera" on public.team for all to authenticated using (true) with check (true);
 
 -- Bucket público para as fotos (serviços e galeria)
 insert into storage.buckets (id, name, public) values ('fotos', 'fotos', true) on conflict (id) do nothing;
@@ -103,3 +119,7 @@ select title, image_url, sort from (values
   ('Experiência Completa', 'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=900&q=75', 5)
 ) as v(title, image_url, sort)
 where not exists (select 1 from public.gallery);
+
+insert into public.team (name, role, bio, instagram, sort)
+select 'Alan Bedim', 'Dono', 'Fundador e dono da Barbearia Italia.', 'https://www.instagram.com/alan70bedim/', 0
+where not exists (select 1 from public.team);

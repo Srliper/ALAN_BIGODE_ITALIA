@@ -6,6 +6,7 @@ const navLinks = [
   { href: '#services', label: 'Serviços' },
   { href: '#gallery', label: 'Galeria' },
   { href: '#about', label: 'Sobre' },
+  { href: '#team', label: 'Equipe' },
   { href: '#booking', label: 'Agendar' },
   { href: '#contact', label: 'Contato' },
 ];
@@ -38,7 +39,7 @@ const Navbar = () => {
             </span>
           </a>
 
-          <ul className="hidden lg:flex items-center gap-8">
+          <ul className="hidden lg:flex items-center gap-6 xl:gap-8">
             {navLinks.map((link) => (
               <li key={link.href}>
                 <a
@@ -69,7 +70,7 @@ const Navbar = () => {
           </button>
         </div>
 
-        <div className={`lg:hidden overflow-hidden transition-all duration-300 ${isOpen ? 'max-h-[28rem] pb-6' : 'max-h-0'}`}>
+        <div className={`lg:hidden overflow-hidden transition-all duration-300 ${isOpen ? 'max-h-[32rem] pb-6' : 'max-h-0'}`}>
           <ul className="flex flex-col gap-2">
             {navLinks.map((link) => (
               <li key={link.href}>

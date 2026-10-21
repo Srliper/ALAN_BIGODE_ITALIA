@@ -5,6 +5,8 @@ No painel, a barbearia altera sozinha, sem mexer no código:
 - **Serviços e preços:** nome, preço, duração, descrição, foto, selo (ex.: "Promoção") e se o serviço aparece no site
 - **Tipos de corte** do formulário de agendamento
 - **Galeria:** envio de fotos dos cortes reais direto do celular (as fotos são reduzidas automaticamente)
+- **Equipe:** perfis da seção "Nossa Equipe" (foto, cargo, texto e Instagram). O dono, Alan Bedim, já vem cadastrado
+  e aparece com a coroa dourada e um cartão de boas-vindas no topo do painel
 
 As alterações aparecem no site na hora, sem novo deploy.
 
@@ -34,7 +36,7 @@ um e-mail) ou apague o usuário e crie de novo com a senha nova.
 3. **Bloqueie novos cadastros:** **Authentication → Sign In / Providers →** desligue
    **"Allow new users to sign up"**. ⚠️ Esse passo é obrigatório: sem ele, qualquer pessoa poderia criar uma
    conta e alterar o site.
-4. **Crie o login do dono:** **Authentication → Users → Add user → Create new user**. Informe um e-mail do dono,
+4. **Crie o login do dono (Alan):** **Authentication → Users → Add user → Create new user**. Informe o e-mail do Alan,
    digite a **senha escolhida para o painel** e marque **Auto Confirm User**.
 5. **Ligue o site ao Supabase:** em **Project Settings → API** (ou **Data API**), copie a **Project URL** e a
    chave **anon public**. Na Vercel, abra o projeto → **Settings → Environment Variables** e adicione:
@@ -59,5 +61,5 @@ mostra um aviso explicando estes passos.
 ## Testes
 
 `npm run test:e2e` testa o site e o painel inteiro (login com senha certa e errada, tutorial, alterar preço,
-esconder e criar serviço com foto, tipos de corte, envio e exclusão de fotos da galeria, agendamento pelo
+esconder e criar serviço com foto, perfil do dono e equipe, tipos de corte, envio e exclusão de fotos da galeria, agendamento pelo
 WhatsApp) no computador e no celular, usando um Supabase simulado. Roda também no GitHub Actions a cada PR.

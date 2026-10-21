@@ -46,6 +46,18 @@ const seed = () => ({
     { id: 1, name: 'Low fade', sort: 0 },
     { id: 2, name: 'Navalhado', sort: 1 },
   ] as Row[],
+  team: [
+    {
+      id: 1,
+      name: 'Alan Bedim',
+      role: 'Dono',
+      bio: 'Fundador e dono da Barbearia Italia.',
+      instagram: 'https://www.instagram.com/alan70bedim/',
+      photo_url: '',
+      storage_path: null,
+      sort: 0,
+    },
+  ] as Row[],
   gallery: [
     { id: 1, title: 'Corte do dia', image_url: `${SUPABASE_URL}/foto-inicial.png`, storage_path: null, sort: 0 },
   ] as Row[],

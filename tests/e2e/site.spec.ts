@@ -91,6 +91,24 @@ test('galeria amplia a foto e prende o foco do teclado', async ({ page, isMobile
   await expect(page.getByRole('button', { name: 'Ampliar foto: Corte do dia' })).toBeFocused();
 });
 
+test('mostra o Instagram da barbearia e o perfil do dono', async ({ page }) => {
+  await page.goto('/');
+  const footerInstagram = page.locator('footer').getByRole('link', { name: 'Instagram' });
+  await expect(footerInstagram).toHaveAttribute('href', 'https://www.instagram.com/barbearia_bigode_italia/');
+  await expect(page.locator('#contact')).toContainText('@barbearia_bigode_italia');
+
+  const team = page.locator('#team');
+  await expect(team.getByRole('heading', { name: 'Alan Bedim' })).toBeVisible();
+  await expect(team).toContainText('Dono');
+  await expect(team.getByRole('link', { name: '@alan70bedim' })).toHaveAttribute(
+    'href',
+    'https://www.instagram.com/alan70bedim/',
+  );
+
+  const ld = JSON.parse((await page.locator('script[type="application/ld+json"]').textContent())!);
+  expect(ld.sameAs).toEqual(['https://www.instagram.com/barbearia_bigode_italia/']);
+});
+
 test('endereço inexistente mostra a página 404', async ({ page }) => {
   await page.goto('/pagina-que-nao-existe');
   await expect(page.getByRole('heading', { name: '404' })).toBeVisible();

@@ -163,3 +163,36 @@ test('enviar e excluir fotos da galeria', async ({ page, context }) => {
   await expect(site.getByRole('button', { name: 'Ampliar foto: Low fade com risco' })).toHaveCount(2);
   await expect(site.getByRole('button', { name: 'Ampliar foto: Corte do dia' })).toHaveCount(0);
 });
+
+test('mostra o perfil do dono e edita a equipe', async ({ page, context }) => {
+  await login(page);
+  await expect(page.getByText('Olá, Alan!')).toBeVisible();
+  await expect(page.getByRole('link', { name: '@alan70bedim' }).first()).toBeVisible();
+
+  await page.getByRole('tab', { name: 'Equipe' }).click();
+  await expect(page.locator('#team-name-1')).toHaveValue('Alan Bedim');
+  await page.locator('#team-bio-1').fill('Barbeiro há 20 anos, especialista em barba.');
+  await page
+    .locator('input[type=file]')
+    .first()
+    .setInputFiles({ name: 'alan.png', mimeType: 'image/png', buffer: PIXEL });
+  await expect(page.getByText('Foto enviada')).toBeVisible();
+  await page.getByRole('button', { name: 'Salvar' }).first().click();
+  await expect.poll(() => db.team[0].bio).toBe('Barbeiro há 20 anos, especialista em barba.');
+  expect(db.team[0].photo_url).toContain('/fotos/equipe/');
+
+  // Novo barbeiro com Instagram digitado só como @usuario
+  await page.getByRole('button', { name: 'Adicionar pessoa' }).click();
+  await page.locator('#team-name-novo').fill('Carlos Souza');
+  await page.locator('#team-instagram-novo').fill('@carlos.barber');
+  await page.getByRole('button', { name: 'Salvar' }).last().click();
+  await expect.poll(() => db.team.length).toBe(2);
+  expect(db.team[1]).toMatchObject({ role: 'Barbeiro', instagram: 'https://www.instagram.com/carlos.barber/' });
+
+  const site = await context.newPage();
+  await site.goto('/');
+  const team = site.locator('#team');
+  await expect(team).toContainText('Barbeiro há 20 anos');
+  await expect(team.getByRole('img', { name: 'Alan Bedim' })).toBeVisible();
+  await expect(team.getByRole('link', { name: '@carlos.barber' })).toBeVisible();
+});

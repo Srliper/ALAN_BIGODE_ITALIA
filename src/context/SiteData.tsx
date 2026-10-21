@@ -2,18 +2,32 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from '
 import { defaultServices, type Service } from '@/data/services';
 import { defaultCutTypes } from '@/data/cutTypes';
 import { defaultGallery, type GalleryItem } from '@/data/gallery';
-import { fetchRows, isSupabaseConfigured, type CutTypeRow, type GalleryRow, type ServiceRow } from '@/lib/supabase';
+import { defaultTeam, type TeamMember } from '@/data/team';
+import {
+  fetchRows,
+  isSupabaseConfigured,
+  type CutTypeRow,
+  type GalleryRow,
+  type ServiceRow,
+  type TeamRow,
+} from '@/lib/supabase';
 
 interface SiteData {
   services: Service[];
   cutTypes: string[];
   gallery: GalleryItem[];
+  team: TeamMember[];
 }
 
-const defaults: SiteData = { services: defaultServices, cutTypes: defaultCutTypes, gallery: defaultGallery };
+const defaults: SiteData = {
+  services: defaultServices,
+  cutTypes: defaultCutTypes,
+  gallery: defaultGallery,
+  team: defaultTeam,
+};
 
 // Última versão vinda do painel, para o visitante que volta não ver os dados padrão piscando
-const CACHE_KEY = 'site-data-v1';
+const CACHE_KEY = 'site-data-v2';
 
 const readCache = (): SiteData | null => {
   try {
@@ -43,16 +57,18 @@ const rowToService = (r: ServiceRow): Service => ({
 });
 
 const loadRemote = async (): Promise<SiteData> => {
-  const [services, cutTypes, gallery] = await Promise.all([
+  const [services, cutTypes, gallery, team] = await Promise.all([
     fetchRows<ServiceRow>('services', 'select=*&active=eq.true&order=sort'),
     fetchRows<CutTypeRow>('cut_types', 'select=*&order=sort'),
     fetchRows<GalleryRow>('gallery', 'select=*&order=sort'),
+    fetchRows<TeamRow>('team', 'select=*&order=sort'),
   ]);
   return {
     // Serviços e cortes vazios quebrariam o agendamento, então caem nos padrões
     services: services.length ? services.map(rowToService) : defaults.services,
     cutTypes: cutTypes.length ? cutTypes.map((c) => c.name) : defaults.cutTypes,
     gallery: gallery.map((g) => ({ title: g.title, src: g.image_url })),
+    team: team.map((t) => ({ name: t.name, role: t.role, bio: t.bio, instagram: t.instagram, photo: t.photo_url })),
   };
 };
 

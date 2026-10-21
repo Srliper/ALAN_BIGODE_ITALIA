@@ -1,17 +1,25 @@
 import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import type { Session } from '@supabase/supabase-js';
-import { ArrowDown, ArrowUp, Crown, ImagePlus, LogOut, Plus, Save, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, Crown, ImagePlus, Instagram, LogOut, Plus, Save, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/hooks/use-toast';
-import { business, formatPrice } from '@/config';
+import { business, formatPrice, instagramHandle, instagramUrl } from '@/config';
 import { formatDuration } from '@/data/services';
+import { defaultTeam, isOwner } from '@/data/team';
 import { deletePhoto, uploadPhoto } from '@/lib/images';
-import { getSupabase, isSupabaseConfigured, type CutTypeRow, type GalleryRow, type ServiceRow } from '@/lib/supabase';
+import {
+  getSupabase,
+  isSupabaseConfigured,
+  type CutTypeRow,
+  type GalleryRow,
+  type ServiceRow,
+  type TeamRow,
+} from '@/lib/supabase';
 
-type Tab = 'help' | 'services' | 'cuts' | 'gallery';
+type Tab = 'help' | 'services' | 'cuts' | 'gallery' | 'team';
 
 // Executa uma ação do painel mostrando erro ou sucesso num aviso
 const run = async (action: () => Promise<unknown>, success?: string) => {
@@ -535,6 +543,275 @@ const CutsTab = () => {
   );
 };
 
+// ---------- Equipe ----------
+
+type TeamDraft = Omit<TeamRow, 'id'> & { id?: number };
+
+const TeamEditor = ({
+  row,
+  onChange,
+  moveButtons,
+}: {
+  row: TeamDraft;
+  onChange: () => void;
+  moveButtons: ReactNode;
+}) => {
+  const [draft, setDraft] = useState(row);
+  const [busy, setBusy] = useState(false);
+  const isNew = row.id === undefined;
+  const dirty = isNew || JSON.stringify(draft) !== JSON.stringify(row);
+  const key = row.id ?? 'novo';
+  const set = <K extends keyof TeamDraft>(field: K, value: TeamDraft[K]) => setDraft((d) => ({ ...d, [field]: value }));
+
+  useEffect(() => setDraft(row), [row]);
+
+  const save = async () => {
+    if (!draft.name.trim() || !draft.role.trim()) {
+      toast({ title: 'Preencha nome e cargo', variant: 'destructive' });
+      return;
+    }
+    setBusy(true);
+    const ok = await run(async () => {
+      const supabase = await getSupabase();
+      const data = {
+        ...draft,
+        name: draft.name.trim(),
+        role: draft.role.trim(),
+        instagram: instagramUrl(draft.instagram),
+      };
+      check(await (isNew ? supabase.from('team').insert(data) : supabase.from('team').update(data).eq('id', row.id)));
+    }, 'Perfil salvo');
+    setBusy(false);
+    if (ok) onChange();
+  };
+
+  const remove = async () => {
+    if (isNew) return onChange();
+    if (!confirm(`Remover ${row.name} da equipe?`)) return;
+    const ok = await run(async () => {
+      check(await (await getSupabase()).from('team').delete().eq('id', row.id));
+      await deletePhoto(row.storage_path);
+    }, 'Perfil removido');
+    if (ok) onChange();
+  };
+
+  const pickPhoto = async ([file]: File[]) => {
+    setBusy(true);
+    await run(async () => {
+      const { url, path } = await uploadPhoto(file, 'equipe');
+      setDraft((d) => ({ ...d, photo_url: url, storage_path: path }));
+    }, 'Foto enviada — clique em Salvar');
+    setBusy(false);
+  };
+
+  return (
+    <div className={`bg-card border rounded-xl p-4 md:p-5 ${isOwner(draft) ? 'border-primary/60' : 'border-border'}`}>
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="shrink-0 flex flex-col items-center gap-2">
+          <div className="relative">
+            <div className="w-28 h-28 rounded-full overflow-hidden bg-secondary border-2 border-primary flex items-center justify-center">
+              {draft.photo_url ? (
+                <img src={draft.photo_url} alt="" className="w-full h-full object-cover" />
+              ) : (
+                <span className="font-display text-3xl font-bold text-gradient-gold">
+                  {draft.name.charAt(0) || '?'}
+                </span>
+              )}
+            </div>
+            {isOwner(draft) && (
+              <span className="absolute -top-1 -right-1 w-9 h-9 rounded-full bg-gradient-gold flex items-center justify-center">
+                <Crown className="w-4 h-4 text-primary-foreground" />
+              </span>
+            )}
+          </div>
+          <PhotoPicker label="Trocar foto" onPick={pickPhoto} />
+        </div>
+
+        <div className="flex-1 grid sm:grid-cols-2 gap-3">
+          <div className="space-y-1">
+            <Label htmlFor={`team-name-${key}`}>Nome</Label>
+            <Input
+              id={`team-name-${key}`}
+              value={draft.name}
+              onChange={(e) => set('name', e.target.value)}
+              className="w-full"
+            />
+          </div>
+          <div className="space-y-1">
+            <Label htmlFor={`team-role-${key}`}>Cargo</Label>
+            <Input
+              id={`team-role-${key}`}
+              value={draft.role}
+              onChange={(e) => set('role', e.target.value)}
+              placeholder="Ex.: Dono, Barbeiro"
+              className="w-full"
+            />
+          </div>
+          <div className="space-y-1 sm:col-span-2">
+            <Label htmlFor={`team-instagram-${key}`}>Instagram</Label>
+            <Input
+              id={`team-instagram-${key}`}
+              value={draft.instagram}
+              onChange={(e) => set('instagram', e.target.value)}
+              placeholder="@usuario ou link do perfil"
+              className="w-full"
+            />
+          </div>
+          <div className="space-y-1 sm:col-span-2">
+            <Label htmlFor={`team-bio-${key}`}>Sobre (aparece no site)</Label>
+            <Textarea
+              id={`team-bio-${key}`}
+              value={draft.bio}
+              onChange={(e) => set('bio', e.target.value)}
+              placeholder="Ex.: 15 anos de experiência, especialista em fade e barba."
+              className="w-full min-h-[70px]"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-wrap items-center justify-end gap-2 mt-4 pt-4 border-t border-border">
+        {moveButtons}
+        <Button
+          type="button"
+          variant="destructive"
+          size="sm"
+          onClick={remove}
+          disabled={busy}
+          className="flex items-center gap-1"
+        >
+          <Trash2 className="w-4 h-4" /> Remover
+        </Button>
+        <Button type="button" size="sm" onClick={save} disabled={busy || !dirty} className="flex items-center gap-1">
+          <Save className="w-4 h-4" /> Salvar
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+const TeamTab = () => {
+  const [rows, setRows] = useState<TeamRow[]>([]);
+  const [draftNew, setDraftNew] = useState<TeamDraft | null>(null);
+
+  const load = useCallback(async () => {
+    await run(async () => {
+      const { data } = check(await (await getSupabase()).from('team').select('*').order('sort'));
+      setRows(data as TeamRow[]);
+    });
+  }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  const move = async (i: number, dir: -1 | 1) => {
+    await run(() => swapSort('team', rows[i], rows[i + dir]));
+    load();
+  };
+
+  return (
+    <div className="space-y-4">
+      <p className="text-sm text-muted-foreground">
+        Perfis que aparecem na seção "Nossa Equipe" do site. Quem tem "Dono" no cargo ganha a coroa dourada.
+      </p>
+      {rows.map((row, i) => (
+        <TeamEditor
+          key={row.id}
+          row={row}
+          onChange={load}
+          moveButtons={
+            <MoveButtons
+              first={i === 0}
+              last={i === rows.length - 1}
+              onUp={() => move(i, -1)}
+              onDown={() => move(i, 1)}
+            />
+          }
+        />
+      ))}
+      {draftNew ? (
+        <TeamEditor
+          row={draftNew}
+          onChange={() => {
+            setDraftNew(null);
+            load();
+          }}
+          moveButtons={null}
+        />
+      ) : (
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() =>
+            setDraftNew({
+              name: '',
+              role: 'Barbeiro',
+              bio: '',
+              instagram: '',
+              photo_url: '',
+              storage_path: null,
+              sort: nextSort(rows),
+            })
+          }
+          className="w-full flex items-center justify-center gap-2"
+        >
+          <Plus className="w-4 h-4" /> Adicionar pessoa
+        </Button>
+      )}
+    </div>
+  );
+};
+
+// Cartão do dono no topo do painel
+const OwnerCard = () => {
+  const [owner, setOwner] = useState<{ name: string; role: string; instagram: string; photo: string }>({
+    ...defaultTeam[0],
+  });
+
+  useEffect(() => {
+    getSupabase()
+      .then((supabase) => supabase.from('team').select('*').order('sort'))
+      .then(({ data }) => {
+        const row = (data as TeamRow[] | null)?.find(isOwner);
+        if (row) setOwner({ name: row.name, role: row.role, instagram: row.instagram, photo: row.photo_url });
+      });
+  }, []);
+
+  return (
+    <div className="flex items-center gap-4 bg-gradient-card border border-primary/40 rounded-2xl p-4 mb-6">
+      <div className="relative shrink-0">
+        <div className="w-16 h-16 rounded-full overflow-hidden bg-secondary border-2 border-primary flex items-center justify-center">
+          {owner.photo ? (
+            <img src={owner.photo} alt="" className="w-full h-full object-cover" />
+          ) : (
+            <span className="font-display text-2xl font-bold text-gradient-gold">{owner.name.charAt(0)}</span>
+          )}
+        </div>
+        <span className="absolute -top-1 -right-1 w-7 h-7 rounded-full bg-gradient-gold flex items-center justify-center">
+          <Crown className="w-3.5 h-3.5 text-primary-foreground" />
+        </span>
+      </div>
+      <div className="min-w-0">
+        <p className="text-lg font-bold text-foreground">Olá, {owner.name.split(' ')[0]}!</p>
+        <p className="text-sm text-muted-foreground">
+          {owner.name} · <span className="text-primary font-semibold">{owner.role}</span> da {business.name}
+        </p>
+        {owner.instagram && (
+          <a
+            href={owner.instagram}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-sm text-primary hover:underline"
+          >
+            <Instagram className="w-4 h-4" /> {instagramHandle(owner.instagram)}
+          </a>
+        )}
+      </div>
+    </div>
+  );
+};
+
 // ---------- Galeria ----------
 
 const GalleryTab = () => {
@@ -738,7 +1015,14 @@ const HelpTab = ({ goTo }: { goTo: (tab: Tab) => void }) => {
             remove.
           </p>
         </HelpStep>
-        <HelpStep n={5} title="Conferir no site e sair">
+        <HelpStep n={5} title="Equipe e perfil do dono">
+          <p>
+            Na aba {link('team', 'Equipe')} ficam os perfis da seção "Nossa Equipe" do site. Troque a foto, escreva um
+            texto sobre a pessoa e coloque o Instagram (pode ser só o <b>@usuario</b>). Quem tem "Dono" no cargo ganha a
+            coroa dourada. Use <b>Adicionar pessoa</b> para incluir novos barbeiros.
+          </p>
+        </HelpStep>
+        <HelpStep n={6} title="Conferir no site e sair">
           <p>
             Clique em <b>Ver o site ↗</b> para conferir as mudanças. Quando terminar, clique em <b>Sair</b>,
             principalmente se estiver num computador ou celular de outra pessoa.
@@ -783,6 +1067,7 @@ const tabs: { id: Tab; label: string }[] = [
   { id: 'services', label: 'Serviços e preços' },
   { id: 'cuts', label: 'Tipos de corte' },
   { id: 'gallery', label: 'Galeria' },
+  { id: 'team', label: 'Equipe' },
 ];
 
 const Admin = () => {
@@ -842,6 +1127,7 @@ const Admin = () => {
           Ver o site ↗
         </a>
       </div>
+      <OwnerCard />
       <nav className="flex gap-2 mb-6 overflow-x-auto" role="tablist">
         {tabs.map((t) => (
           <button
@@ -863,6 +1149,7 @@ const Admin = () => {
       {tab === 'services' && <ServicesTab />}
       {tab === 'cuts' && <CutsTab />}
       {tab === 'gallery' && <GalleryTab />}
+      {tab === 'team' && <TeamTab />}
     </Shell>
   );
 };

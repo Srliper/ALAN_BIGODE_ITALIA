@@ -21,7 +21,7 @@ const resize = (file: File, maxSize = 1600): Promise<Blob> =>
     img.src = objectUrl;
   });
 
-export async function uploadPhoto(file: File, folder: 'servicos' | 'galeria') {
+export async function uploadPhoto(file: File, folder: 'servicos' | 'galeria' | 'equipe') {
   const supabase = await getSupabase();
   const blob = await resize(file);
   const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.webp`;

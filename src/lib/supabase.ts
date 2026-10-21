@@ -53,3 +53,14 @@ export interface GalleryRow {
   storage_path: string | null;
   sort: number;
 }
+
+export interface TeamRow {
+  id: number;
+  name: string;
+  role: string;
+  bio: string;
+  instagram: string;
+  photo_url: string;
+  storage_path: string | null;
+  sort: number;
+}
