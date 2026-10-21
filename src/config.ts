@@ -16,9 +16,9 @@ export const business = {
   instagram: 'https://www.instagram.com/barbearia_bigode_italia/',
   // Domínio do site, sem barra no final, ex.: 'https://barbeariaitalia.com.br'
   // Preencha para gerar canonical, og:url e sitemap.xml.
-  siteUrl: '',
+  siteUrl: 'https://alan-bigode-italia.vercel.app',
   // Imagem que aparece ao compartilhar o link (ideal 1200x630). Pode ser '/og.jpg' se colocar em public/.
-  ogImage: 'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=1200&h=630&fit=crop&q=80',
+  ogImage: '/og-image.png',
   // Login do painel: o usuário digita '@alanbigode' e o site entra no Supabase como 'alanbigode@<este domínio>'.
   // O usuário precisa ser criado no Supabase com esse e-mail (veja ADMIN.md).
   adminLoginDomain: 'barbeariabigodeitalia.com',

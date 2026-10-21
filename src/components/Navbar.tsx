@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Menu, X, Crown } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
+import Logo from './Logo';
 import { business } from '@/config';
 
 const navLinks = [
@@ -34,7 +35,7 @@ const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
           <a href="#home" className="flex items-center gap-2" onClick={() => setIsOpen(false)}>
-            <Crown className="w-7 h-7 text-primary" />
+            <Logo className="w-11 h-11" />
             <span className="font-display text-xl md:text-2xl font-bold text-gradient-gold tracking-wide">
               {business.name}
             </span>

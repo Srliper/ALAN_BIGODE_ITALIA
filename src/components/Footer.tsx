@@ -1,4 +1,5 @@
-import { Crown, MessageCircle, MapPin, Instagram } from 'lucide-react';
+import { MessageCircle, MapPin, Instagram } from 'lucide-react';
+import Logo from './Logo';
 import { business, whatsappLink } from '@/config';
 
 const Footer = () => {
@@ -8,7 +9,7 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
           <div>
             <a href="#home" className="flex items-center justify-center md:justify-start gap-2 mb-2">
-              <Crown className="w-5 h-5 text-primary" />
+              <Logo className="w-9 h-9" />
               <span className="font-display text-xl font-bold text-gradient-gold">{business.name}</span>
             </a>
             <p className="text-sm text-muted-foreground flex items-center justify-center md:justify-start gap-1.5">
