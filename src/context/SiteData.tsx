@@ -3,11 +3,13 @@ import { defaultServices, type Service } from '@/data/services';
 import { defaultCutTypes } from '@/data/cutTypes';
 import { defaultGallery, type GalleryItem } from '@/data/gallery';
 import { defaultTeam, type TeamMember } from '@/data/team';
+import { defaultProducts, type Product } from '@/data/products';
 import {
   fetchRows,
   isSupabaseConfigured,
   type CutTypeRow,
   type GalleryRow,
+  type ProductRow,
   type ServiceRow,
   type TeamRow,
 } from '@/lib/supabase';
@@ -17,6 +19,7 @@ interface SiteData {
   cutTypes: string[];
   gallery: GalleryItem[];
   team: TeamMember[];
+  products: Product[];
 }
 
 const defaults: SiteData = {
@@ -24,10 +27,11 @@ const defaults: SiteData = {
   cutTypes: defaultCutTypes,
   gallery: defaultGallery,
   team: defaultTeam,
+  products: defaultProducts,
 };
 
 // Última versão vinda do painel, para o visitante que volta não ver os dados padrão piscando
-const CACHE_KEY = 'site-data-v2';
+const CACHE_KEY = 'site-data-v3';
 
 const readCache = (): SiteData | null => {
   try {
@@ -57,11 +61,13 @@ const rowToService = (r: ServiceRow): Service => ({
 });
 
 const loadRemote = async (): Promise<SiteData> => {
-  const [services, cutTypes, gallery, team] = await Promise.all([
+  const [services, cutTypes, gallery, team, products] = await Promise.all([
     fetchRows<ServiceRow>('services', 'select=*&active=eq.true&order=sort'),
     fetchRows<CutTypeRow>('cut_types', 'select=*&order=sort'),
     fetchRows<GalleryRow>('gallery', 'select=*&order=sort'),
     fetchRows<TeamRow>('team', 'select=*&order=sort'),
+    // Tolerante: se a tabela products ainda não foi criada (schema.sql antigo), só a loja fica escondida
+    fetchRows<ProductRow>('products', 'select=*&active=eq.true&order=sort').catch(() => []),
   ]);
   return {
     // Serviços e cortes vazios quebrariam o agendamento, então caem nos padrões
@@ -69,6 +75,15 @@ const loadRemote = async (): Promise<SiteData> => {
     cutTypes: cutTypes.length ? cutTypes.map((c) => c.name) : defaults.cutTypes,
     gallery: gallery.map((g) => ({ title: g.title, src: g.image_url })),
     team: team.map((t) => ({ name: t.name, role: t.role, bio: t.bio, instagram: t.instagram, photo: t.photo_url })),
+    products: products.map((p) => ({
+      id: p.id,
+      name: p.name,
+      description: p.description,
+      priceValue: Number(p.price),
+      image: p.image_url,
+      category: p.category,
+      inStock: p.in_stock,
+    })),
   };
 };
 

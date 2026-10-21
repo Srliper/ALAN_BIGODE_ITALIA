@@ -204,3 +204,45 @@ test('mostra o perfil do dono e edita a equipe', async ({ page, context }) => {
   await expect(team.getByRole('img', { name: 'Alan Bedim' })).toBeVisible();
   await expect(team.getByRole('link', { name: '@carlos.barber' })).toBeVisible();
 });
+
+test('produtos: rascunho sem preço não vai ao site; com preço aparece', async ({ page, context }) => {
+  await login(page);
+  await page.getByRole('tab', { name: 'Produtos' }).click();
+  await expect(page.locator('#product-name-rascunho')).toHaveValue('Cera Rascunho');
+
+  const card = page
+    .locator('div', { has: page.locator('#product-name-rascunho') })
+    .filter({ has: page.getByRole('button', { name: 'Salvar' }) })
+    .last();
+  await card.getByLabel('Mostrar no site').check();
+  await card.getByRole('button', { name: 'Salvar' }).click();
+  await expect(page.getByText('Defina o preço antes de mostrar no site')).toBeVisible();
+  expect(db.products.find((p) => p.id === 'rascunho')?.active).toBe(false);
+
+  await page.locator('#product-price-rascunho').fill('32');
+  await page
+    .locator('input[type=file]')
+    .nth(3)
+    .setInputFiles({ name: 'cera.png', mimeType: 'image/png', buffer: PIXEL });
+  await expect(page.getByText('Foto enviada')).toBeVisible();
+  await card.getByRole('button', { name: 'Salvar' }).click();
+  await expect.poll(() => db.products.find((p) => p.id === 'rascunho')?.active).toBe(true);
+  expect(db.products.find((p) => p.id === 'rascunho')).toMatchObject({ price: 32 });
+  expect(uploads.some((u) => u.includes('/fotos/produtos/'))).toBe(true);
+
+  // Marca a pomada como esgotada
+  const pomada = page
+    .locator('div', { has: page.locator('#product-name-pomada-matte') })
+    .filter({ has: page.getByRole('button', { name: 'Salvar' }) })
+    .last();
+  await pomada.getByLabel('Tem em estoque').uncheck();
+  await pomada.getByRole('button', { name: 'Salvar' }).click();
+  await expect.poll(() => db.products.find((p) => p.id === 'pomada-matte')?.in_stock).toBe(false);
+
+  const site = await context.newPage();
+  await site.goto('/');
+  const shop = site.locator('#products');
+  await expect(shop.getByRole('heading', { name: 'Cera Rascunho' })).toBeVisible();
+  await expect(shop).toContainText('R$ 32,00');
+  await expect(shop.locator('article', { hasText: 'Pomada Matte' })).toContainText('Esgotado');
+});

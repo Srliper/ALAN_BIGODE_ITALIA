@@ -48,6 +48,52 @@ const seed = () => ({
     { id: 1, name: 'Low fade', sort: 0 },
     { id: 2, name: 'Navalhado', sort: 1 },
   ] as Row[],
+  products: [
+    {
+      id: 'pomada-matte',
+      name: 'Pomada Matte',
+      description: 'Fixação forte',
+      price: 45,
+      image_url: '',
+      category: 'Cabelo',
+      in_stock: true,
+      active: true,
+      sort: 0,
+    },
+    {
+      id: 'oleo-barba',
+      name: 'Óleo para Barba',
+      description: 'Hidrata',
+      price: 39.9,
+      image_url: '',
+      category: 'Barba',
+      in_stock: true,
+      active: true,
+      sort: 1,
+    },
+    {
+      id: 'gel',
+      name: 'Gel Fixador',
+      description: '',
+      price: 25,
+      image_url: '',
+      category: 'Cabelo',
+      in_stock: false,
+      active: true,
+      sort: 2,
+    },
+    {
+      id: 'rascunho',
+      name: 'Cera Rascunho',
+      description: '',
+      price: 0,
+      image_url: '',
+      category: 'Cabelo',
+      in_stock: true,
+      active: false,
+      sort: 3,
+    },
+  ] as Row[],
   team: [
     {
       id: 1,
@@ -83,8 +129,10 @@ const matches = (row: Row, params: URLSearchParams) => {
  * Simula o Supabase (login, tabelas e upload de fotos) para todas as abas do contexto,
  * com um banco em memória compartilhado — o que o painel salva aparece no site.
  */
-export async function mockSupabase(context: BrowserContext) {
-  const db = seed();
+export async function mockSupabase(context: BrowserContext, options: { withoutProducts?: boolean } = {}) {
+  const db: Partial<ReturnType<typeof seed>> = seed();
+  // Simula um Supabase em que o schema.sql novo (com a tabela products) ainda não foi rodado
+  if (options.withoutProducts) delete db.products;
   let nextId = 100;
   const uploads: string[] = [];
 
@@ -165,7 +213,7 @@ export async function mockSupabase(context: BrowserContext) {
     }
   });
 
-  return { db, uploads };
+  return { db: db as ReturnType<typeof seed>, uploads };
 }
 
 export { PIXEL };

@@ -16,11 +16,12 @@ import {
   isSupabaseConfigured,
   type CutTypeRow,
   type GalleryRow,
+  type ProductRow,
   type ServiceRow,
   type TeamRow,
 } from '@/lib/supabase';
 
-type Tab = 'help' | 'services' | 'cuts' | 'gallery' | 'team';
+type Tab = 'help' | 'services' | 'products' | 'cuts' | 'gallery' | 'team';
 
 // Executa uma ação do painel mostrando erro ou sucesso num aviso
 const run = async (action: () => Promise<unknown>, success?: string) => {
@@ -548,6 +549,250 @@ const CutsTab = () => {
   );
 };
 
+// ---------- Produtos ----------
+
+const ProductEditor = ({
+  row,
+  isNew,
+  onChange,
+  moveButtons,
+}: {
+  row: ProductRow;
+  isNew: boolean;
+  onChange: () => void;
+  moveButtons: ReactNode;
+}) => {
+  const [draft, setDraft] = useState(row);
+  const [busy, setBusy] = useState(false);
+  const dirty = isNew || JSON.stringify(draft) !== JSON.stringify(row);
+  const set = <K extends keyof ProductRow>(key: K, value: ProductRow[K]) => setDraft((d) => ({ ...d, [key]: value }));
+
+  useEffect(() => setDraft(row), [row]);
+
+  const save = async () => {
+    if (!draft.name.trim()) {
+      toast({ title: 'Preencha o nome do produto', variant: 'destructive' });
+      return;
+    }
+    // Produto sem preço pode ficar salvo como rascunho, mas não aparece no site
+    if (draft.active && !(draft.price > 0)) {
+      toast({ title: 'Defina o preço antes de mostrar no site', variant: 'destructive' });
+      return;
+    }
+    setBusy(true);
+    const ok = await run(async () => {
+      const supabase = await getSupabase();
+      check(
+        await supabase.from('products').upsert({ ...draft, name: draft.name.trim(), category: draft.category.trim() }),
+      );
+    }, 'Produto salvo');
+    setBusy(false);
+    if (ok) onChange();
+  };
+
+  const remove = async () => {
+    if (isNew) return onChange();
+    if (!confirm(`Excluir o produto "${row.name}"?`)) return;
+    if (
+      await run(
+        async () => check(await (await getSupabase()).from('products').delete().eq('id', row.id)),
+        'Produto excluído',
+      )
+    )
+      onChange();
+  };
+
+  const pickImage = async ([file]: File[]) => {
+    setBusy(true);
+    await run(
+      async () => set('image_url', (await uploadPhoto(file, 'produtos')).url),
+      'Foto enviada — clique em Salvar',
+    );
+    setBusy(false);
+  };
+
+  return (
+    <div
+      className={`bg-card border rounded-xl p-4 md:p-5 ${draft.active ? 'border-border' : 'border-dashed border-border opacity-70'}`}
+    >
+      <div className="flex flex-col md:flex-row gap-4">
+        <div className="md:w-40 shrink-0 space-y-2">
+          <div className="aspect-square rounded-lg overflow-hidden bg-secondary">
+            {draft.image_url && <img src={draft.image_url} alt="" className="w-full h-full object-cover" />}
+          </div>
+          <PhotoPicker label="Trocar foto" onPick={pickImage} />
+        </div>
+
+        <div className="flex-1 grid sm:grid-cols-2 gap-3">
+          <div className="space-y-1 sm:col-span-2">
+            <Label htmlFor={`product-name-${row.id}`}>Nome</Label>
+            <Input
+              id={`product-name-${row.id}`}
+              value={draft.name}
+              onChange={(e) => set('name', e.target.value)}
+              placeholder="Ex.: Pomada Modeladora Efeito Matte 120g"
+              className="w-full"
+            />
+          </div>
+          <div className="space-y-1">
+            <Label htmlFor={`product-price-${row.id}`}>Preço (R$)</Label>
+            <Input
+              id={`product-price-${row.id}`}
+              type="number"
+              inputMode="decimal"
+              min={0}
+              step="0.01"
+              value={draft.price}
+              onChange={(e) => set('price', Number(e.target.value))}
+              className="w-full"
+            />
+          </div>
+          <div className="space-y-1">
+            <Label htmlFor={`product-category-${row.id}`}>Categoria</Label>
+            <Input
+              id={`product-category-${row.id}`}
+              value={draft.category}
+              onChange={(e) => set('category', e.target.value)}
+              placeholder="Ex.: Cabelo, Barba"
+              className="w-full"
+            />
+          </div>
+          <div className="space-y-1 sm:col-span-2">
+            <Label htmlFor={`product-description-${row.id}`}>Descrição</Label>
+            <Textarea
+              id={`product-description-${row.id}`}
+              value={draft.description}
+              onChange={(e) => set('description', e.target.value)}
+              placeholder="Ex.: Fixação forte, sem brilho, lava fácil."
+              className="w-full min-h-[60px]"
+            />
+          </div>
+          <label className="flex items-center gap-2 text-sm text-foreground">
+            <input
+              type="checkbox"
+              checked={draft.active}
+              onChange={(e) => set('active', e.target.checked)}
+              className="accent-primary w-4 h-4"
+            />
+            Mostrar no site
+          </label>
+          <label className="flex items-center gap-2 text-sm text-foreground">
+            <input
+              type="checkbox"
+              checked={draft.in_stock}
+              onChange={(e) => set('in_stock', e.target.checked)}
+              className="accent-primary w-4 h-4"
+            />
+            Tem em estoque
+          </label>
+        </div>
+      </div>
+
+      <div className="flex flex-wrap items-center justify-between gap-3 mt-4 pt-4 border-t border-border">
+        <span className="text-sm text-muted-foreground">
+          {draft.price > 0 ? formatPrice(draft.price) : 'Sem preço (não aparece no site)'}
+          {!draft.in_stock && ' · Esgotado'}
+        </span>
+        <div className="flex flex-wrap gap-2">
+          {moveButtons}
+          <Button
+            type="button"
+            variant="destructive"
+            size="sm"
+            onClick={remove}
+            disabled={busy}
+            className="flex items-center gap-1"
+          >
+            <Trash2 className="w-4 h-4" /> Excluir
+          </Button>
+          <Button type="button" size="sm" onClick={save} disabled={busy || !dirty} className="flex items-center gap-1">
+            <Save className="w-4 h-4" /> Salvar
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ProductsTab = () => {
+  const [rows, setRows] = useState<ProductRow[]>([]);
+  const [draftNew, setDraftNew] = useState<ProductRow | null>(null);
+
+  const load = useCallback(async () => {
+    await run(async () => {
+      const { data } = check(await (await getSupabase()).from('products').select('*').order('sort'));
+      setRows(data as ProductRow[]);
+    });
+  }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  const move = async (i: number, dir: -1 | 1) => {
+    await run(() => swapSort('products', rows[i], rows[i + dir]));
+    load();
+  };
+
+  return (
+    <div className="space-y-4">
+      <p className="text-sm text-muted-foreground">
+        Produtos da seção "Nossos Produtos". O cliente monta o pedido no site e envia pelo WhatsApp; a retirada e o
+        pagamento são na barbearia. Os produtos sugeridos começam escondidos: coloque o preço, a foto e marque{' '}
+        <b>Mostrar no site</b>.
+      </p>
+      {rows.map((row, i) => (
+        <ProductEditor
+          key={row.id}
+          row={row}
+          isNew={false}
+          onChange={load}
+          moveButtons={
+            <MoveButtons
+              first={i === 0}
+              last={i === rows.length - 1}
+              onUp={() => move(i, -1)}
+              onDown={() => move(i, 1)}
+            />
+          }
+        />
+      ))}
+      {draftNew ? (
+        <ProductEditor
+          row={draftNew}
+          isNew
+          onChange={() => {
+            setDraftNew(null);
+            load();
+          }}
+          moveButtons={null}
+        />
+      ) : (
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() =>
+            setDraftNew({
+              id: `produto-${Date.now().toString(36)}`,
+              name: '',
+              description: '',
+              price: 0,
+              image_url: '',
+              category: '',
+              in_stock: true,
+              active: true,
+              sort: nextSort(rows),
+            })
+          }
+          className="w-full flex items-center justify-center gap-2"
+        >
+          <Plus className="w-4 h-4" /> Adicionar produto
+        </Button>
+      )}
+    </div>
+  );
+};
+
 // ---------- Equipe ----------
 
 type TeamDraft = Omit<TeamRow, 'id'> & { id?: number };
@@ -1001,7 +1246,21 @@ const HelpTab = ({ goTo }: { goTo: (tab: Tab) => void }) => {
             clique em <b>Salvar</b>. A foto é reduzida automaticamente, então pode mandar a original da câmera.
           </p>
         </HelpStep>
-        <HelpStep n={3} title="Colocar fotos dos cortes na galeria">
+        <HelpStep n={3} title="Vender produtos (pomada, modelador…)">
+          <p>
+            Na aba {link('products', 'Produtos')} já vêm alguns produtos sugeridos, <b>escondidos</b>. Em cada um:
+            coloque o preço, troque a foto, ajuste o nome e marque <b>Mostrar no site</b>. Clique em <b>Salvar</b>.
+          </p>
+          <ul className="list-disc pl-5 space-y-1">
+            <li>No site, o cliente escolhe as quantidades e envia o pedido pelo WhatsApp com o total calculado.</li>
+            <li>A retirada e o pagamento são na barbearia (não há pagamento online).</li>
+            <li>
+              Acabou o estoque? Desmarque <b>Tem em estoque</b>: o produto continua no site, mas aparece como
+              "Esgotado".
+            </li>
+          </ul>
+        </HelpStep>
+        <HelpStep n={4} title="Colocar fotos dos cortes na galeria">
           <p>Abra a aba {link('gallery', 'Galeria')}:</p>
           <ul className="list-disc pl-5 space-y-1">
             <li>
@@ -1013,21 +1272,21 @@ const HelpTab = ({ goTo }: { goTo: (tab: Tab) => void }) => {
             <li>Dica: fotos bem iluminadas, de lado e de costas, mostram melhor o acabamento.</li>
           </ul>
         </HelpStep>
-        <HelpStep n={4} title="Tipos de corte do agendamento">
+        <HelpStep n={5} title="Tipos de corte do agendamento">
           <p>
             Na aba {link('cuts', 'Tipos de corte')} ficam as opções que o cliente escolhe ao agendar. Escreva um novo e
             clique em <b>Adicionar</b>. Para renomear, edite e toque fora do campo. Setas mudam a ordem; a lixeira
             remove.
           </p>
         </HelpStep>
-        <HelpStep n={5} title="Equipe e perfil do dono">
+        <HelpStep n={6} title="Equipe e perfil do dono">
           <p>
             Na aba {link('team', 'Equipe')} ficam os perfis da seção "Nossa Equipe" do site. Troque a foto, escreva um
             texto sobre a pessoa e coloque o Instagram (pode ser só o <b>@usuario</b>). Quem tem "Dono" no cargo ganha a
             coroa dourada. Use <b>Adicionar pessoa</b> para incluir novos barbeiros.
           </p>
         </HelpStep>
-        <HelpStep n={6} title="Conferir no site e sair">
+        <HelpStep n={7} title="Conferir no site e sair">
           <p>
             Clique em <b>Ver o site ↗</b> para conferir as mudanças. Quando terminar, clique em <b>Sair</b>,
             principalmente se estiver num computador ou celular de outra pessoa.
@@ -1070,6 +1329,7 @@ const markTutorialSeen = () => {
 const tabs: { id: Tab; label: string }[] = [
   { id: 'help', label: 'Como usar' },
   { id: 'services', label: 'Serviços e preços' },
+  { id: 'products', label: 'Produtos' },
   { id: 'cuts', label: 'Tipos de corte' },
   { id: 'gallery', label: 'Galeria' },
   { id: 'team', label: 'Equipe' },
@@ -1152,6 +1412,7 @@ const Admin = () => {
       </nav>
       {tab === 'help' && <HelpTab goTo={setTab} />}
       {tab === 'services' && <ServicesTab />}
+      {tab === 'products' && <ProductsTab />}
       {tab === 'cuts' && <CutsTab />}
       {tab === 'gallery' && <GalleryTab />}
       {tab === 'team' && <TeamTab />}

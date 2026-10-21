@@ -109,9 +109,47 @@ test('mostra o Instagram da barbearia e o perfil do dono', async ({ page }) => {
   expect(ld.sameAs).toEqual(['https://www.instagram.com/barbearia_bigode_italia/']);
 });
 
+test('loja: monta o pedido e envia pelo WhatsApp', async ({ page }) => {
+  await captureWindowOpen(page);
+  await page.goto('/');
+  const shop = page.locator('#products');
+  await expect(shop.getByRole('heading', { name: 'Pomada Matte' })).toBeVisible();
+  // Produto escondido no painel não aparece; esgotado aparece sem botão
+  await expect(shop.getByRole('heading', { name: 'Cera Rascunho' })).toHaveCount(0);
+  await expect(shop.locator('article', { hasText: 'Gel Fixador' })).toContainText('Esgotado');
+
+  const pomada = shop.locator('article', { hasText: 'Pomada Matte' });
+  await pomada.getByRole('button', { name: 'Adicionar' }).click();
+  await pomada.getByRole('button', { name: 'Aumentar Pomada Matte' }).click();
+  await shop.locator('article', { hasText: 'Óleo para Barba' }).getByRole('button', { name: 'Adicionar' }).click();
+
+  const cart = page.getByRole('region', { name: 'Seu pedido' });
+  await expect(cart).toContainText('3 itens');
+  await expect(cart).toContainText('129,90');
+  await cart.getByRole('button', { name: 'Pedir' }).click();
+
+  const [url] = await openedUrls(page);
+  const message = decodeURIComponent(url.split('text=')[1]).replace(/\u00a0/g, ' ');
+  expect(message).toContain('• 2x Pomada Matte — R$ 90,00');
+  expect(message).toContain('• 1x Óleo para Barba — R$ 39,90');
+  expect(message).toContain('*Total:* R$ 129,90');
+  await expect(cart).toBeHidden();
+});
+
 test('endereço inexistente mostra a página 404', async ({ page }) => {
   await page.goto('/pagina-que-nao-existe');
   await expect(page.getByRole('heading', { name: '404' })).toBeVisible();
   await page.getByRole('link', { name: 'Voltar para o início' }).click();
   await expect(page).toHaveURL('/');
+});
+
+test('sem a tabela de produtos, o resto do site continua vindo do painel', async ({ browser }) => {
+  const context = await browser.newContext();
+  await mockSupabase(context, { withoutProducts: true });
+  const page = await context.newPage();
+  await page.goto('/');
+  await expect(page.locator('#services').getByRole('heading', { name: 'Coloração' })).toBeVisible();
+  await expect(page.locator('#cutType option')).toContainText(['Low fade']);
+  await expect(page.locator('#products')).toHaveCount(0);
+  await context.close();
 });
