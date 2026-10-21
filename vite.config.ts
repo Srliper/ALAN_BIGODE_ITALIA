@@ -1,8 +1,8 @@
-import { defineConfig, type HtmlTagDescriptor, type Plugin } from 'vite';
+import { defineConfig, loadEnv, type HtmlTagDescriptor, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import { business } from './src/config';
-import { services } from './src/data/services';
+import { defaultServices as services } from './src/data/services';
 
 const schemaDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
@@ -66,7 +66,7 @@ const seo = (): Plugin => {
 
       emit(
         'robots.txt',
-        `User-agent: *\nAllow: /\n${business.siteUrl ? `\nSitemap: ${business.siteUrl}/sitemap.xml\n` : ''}`,
+        `User-agent: *\nAllow: /\nDisallow: /admin\n${business.siteUrl ? `\nSitemap: ${business.siteUrl}/sitemap.xml\n` : ''}`,
       );
       if (business.siteUrl) {
         emit(
@@ -96,11 +96,32 @@ const seo = (): Plugin => {
   };
 };
 
-export default defineConfig({
+// A integração Supabase da Vercel cria SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY etc. (sem o prefixo VITE_).
+// Só estas variáveis públicas são repassadas ao site; as secretas (service role, senha do banco)
+// nunca entram no código do navegador.
+const publicEnv = (mode: string) => {
+  const env = loadEnv(mode, process.cwd(), '');
+  const pick = (...names: string[]) => JSON.stringify(names.map((n) => env[n]).find(Boolean) ?? '');
+  return {
+    'import.meta.env.VITE_SUPABASE_URL': pick('VITE_SUPABASE_URL', 'SUPABASE_URL', 'NEXT_PUBLIC_SUPABASE_URL'),
+    // A chave publishable (sb_publishable_…) vem primeiro: com ela dá para desativar as chaves antigas (JWT)
+    'import.meta.env.VITE_SUPABASE_ANON_KEY': pick(
+      'VITE_SUPABASE_ANON_KEY',
+      'SUPABASE_PUBLISHABLE_KEY',
+      'NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY',
+      'SUPABASE_ANON_KEY',
+      'NEXT_PUBLIC_SUPABASE_ANON_KEY',
+    ),
+    'import.meta.env.VITE_ADMIN_EMAIL': pick('VITE_ADMIN_EMAIL', 'ADMIN_EMAIL'),
+  };
+};
+
+export default defineConfig(({ mode }) => ({
+  define: publicEnv(mode),
   plugins: [react(), seo()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
     },
   },
-});
+}));

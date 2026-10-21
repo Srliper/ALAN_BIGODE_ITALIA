@@ -1,4 +1,5 @@
-// Serviços e preços — usados nos cards, no formulário de agendamento e nos dados para o Google.
+// Serviços padrão — usados enquanto o painel admin (Supabase) não estiver configurado,
+// e como base dos dados para o Google gerados no build.
 export interface Service {
   id: string;
   name: string;
@@ -9,7 +10,7 @@ export interface Service {
   badge?: string;
 }
 
-export const services: Service[] = [
+export const defaultServices: Service[] = [
   {
     id: 'corte',
     name: 'Corte de Cabelo',

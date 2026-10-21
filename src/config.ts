@@ -1,6 +1,6 @@
 // Dados da barbearia — altere aqui e o site inteiro é atualizado.
 export const business = {
-  name: 'Barbearia Italia',
+  name: 'Barbearia Bigode Italia',
   phoneDisplay: '(15) 99964-8684',
   // Somente dígitos, com DDI 55 — usado em links tel: e WhatsApp
   phoneDigits: '5515999648684',
@@ -12,8 +12,8 @@ export const business = {
   mapsUrl: 'https://maps.app.goo.gl/Bg84az4wg2bBX6kE6',
   mapsEmbed:
     'https://www.google.com/maps?q=Av.+Jo%C3%A3o+Barth,+503+-+Vila+Barth,+Itapetininga+-+SP,+18205-310&output=embed',
-  // Endereço completo do Instagram, ex.: 'https://instagram.com/barbeariaitalia' (vazio = ícone escondido)
-  instagram: '',
+  // Instagram da barbearia (vazio = ícone escondido)
+  instagram: 'https://www.instagram.com/barbearia_bigode_italia/',
   // Domínio do site, sem barra no final, ex.: 'https://barbeariaitalia.com.br'
   // Preencha para gerar canonical, og:url e sitemap.xml.
   siteUrl: '',
@@ -26,6 +26,17 @@ export const business = {
   // 0 = domingo ... 6 = sábado
   openDays: [2, 3, 4, 5, 6],
 };
+
+// Converte '@usuario', 'usuario' ou um link do Instagram em link completo
+export const instagramUrl = (value: string) => {
+  const v = value.trim();
+  if (!v) return '';
+  if (/^https?:\/\//.test(v)) return v;
+  return `https://www.instagram.com/${v.replace(/^@/, '').replace(/\/+$/, '')}/`;
+};
+
+// 'https://www.instagram.com/alan70bedim/' -> '@alan70bedim'
+export const instagramHandle = (url: string) => '@' + url.replace(/\/+$/, '').split('/').pop();
 
 export const weekdayNames = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'];
 
@@ -43,5 +54,4 @@ export const toMinutes = (time: string) => {
 export const whatsappLink = (message?: string) =>
   `https://wa.me/${business.phoneDigits}${message ? `?text=${encodeURIComponent(message)}` : ''}`;
 
-export const formatPrice = (value: number) =>
-  value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+export const formatPrice = (value: number) => value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });

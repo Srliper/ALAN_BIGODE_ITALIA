@@ -1,18 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import SectionHeading from './SectionHeading';
-
-// Troque por fotos reais da barbearia (coloque os arquivos em /public/galeria e use '/galeria/foto1.jpg').
-const galleryItems = [
-  { src: 'https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=900&q=75', title: 'Fade Moderno' },
-  { src: 'https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=900&q=75', title: 'Barba Estilizada' },
-  { src: 'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=900&q=75', title: 'Nosso Espaço' },
-  { src: 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=900&q=75', title: 'Acabamento na Navalha' },
-  { src: 'https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=900&q=75', title: 'Corte Clássico' },
-  { src: 'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=900&q=75', title: 'Experiência Completa' },
-];
+import { useSiteData } from '@/context/SiteData';
 
 const GallerySection = () => {
+  const { gallery: galleryItems } = useSiteData();
   const [active, setActive] = useState<number | null>(null);
   const isOpen = active !== null;
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -49,7 +41,9 @@ const GallerySection = () => {
       document.body.style.overflow = '';
       opener?.focus();
     };
-  }, [isOpen]);
+  }, [isOpen, galleryItems.length]);
+
+  if (!galleryItems.length) return null;
 
   return (
     <section id="gallery" className="py-24 relative overflow-hidden">
@@ -63,7 +57,7 @@ const GallerySection = () => {
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
           {galleryItems.map((item, index) => (
             <button
-              key={item.src}
+              key={item.src + index}
               onClick={() => setActive(index)}
               className="group aspect-[4/3] rounded-xl md:rounded-2xl overflow-hidden relative border border-primary/20 hover:border-primary transition-colors bg-secondary"
               aria-label={`Ampliar foto: ${item.title}`}

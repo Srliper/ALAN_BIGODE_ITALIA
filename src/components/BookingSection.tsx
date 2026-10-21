@@ -6,7 +6,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
 import SectionHeading from './SectionHeading';
-import { services, formatDuration } from '@/data/services';
+import { formatDuration } from '@/data/services';
+import { useSiteData } from '@/context/SiteData';
 import { business, closedDaysLabel, formatPrice, toMinutes, whatsappLink } from '@/config';
 import { trackEvent } from '@/lib/analytics';
 
@@ -21,8 +22,6 @@ interface BookingData {
 }
 
 const emptyForm: BookingData = { name: '', phone: '', service: '', cutType: '', date: '', time: '', notes: '' };
-
-const cutTypes = ['Manter o corte atual', 'Clássico', 'Moderno', 'Fade', 'Degradê', 'Social', 'Militar', 'Raspado', 'Outro (descrever nas observações)'];
 
 const SLOT_INTERVAL = 30;
 
@@ -58,6 +57,7 @@ const selectClass =
   'w-full px-3 py-2.5 rounded-md border border-border bg-input text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary appearance-none bg-[url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%2712%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%23d4a940%27 stroke-width=%273%27%3E%3Cpath d=%27m6 9 6 6 6-6%27/%3E%3C/svg%3E")] bg-no-repeat bg-[right_0.9rem_center]';
 
 const BookingSection = () => {
+  const { services, cutTypes } = useSiteData();
   const [formData, setFormData] = useState<BookingData>(emptyForm);
   const set = (field: keyof BookingData, value: string) => setFormData((f) => ({ ...f, [field]: value }));
 
@@ -80,7 +80,7 @@ const BookingSection = () => {
     const now = new Date();
     const nowMinutes = now.getHours() * 60 + now.getMinutes();
     return slots.filter((t) => toMinutes(t) > nowMinutes + 30);
-  }, [formData.date, today, selectedService]);
+  }, [formData.date, today, selectedService, services]);
 
   // Trocar de serviço pode tirar o horário escolhido da lista (ex.: serviço longo no fim do dia)
   useEffect(() => {

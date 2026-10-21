@@ -1,6 +1,6 @@
-# Barbearia Italia
+# Barbearia Bigode Italia
 
-Site da Barbearia Italia (Itapetininga - SP), feito com Vite + React + Tailwind CSS v4.
+Site da Barbearia Bigode Italia (Itapetininga - SP), feito com Vite + React + Tailwind CSS v4.
 
 ## Rodando localmente
 
@@ -15,14 +15,18 @@ Build de produção (gera a pasta `dist/`):
 npm run build
 ```
 
+## Painel admin
+
+Preços, serviços, tipos de corte e fotos da galeria podem ser alterados em `/admin`.
+Configuração e login: veja [ADMIN.md](ADMIN.md). Pendências: [CHECKLIST.md](CHECKLIST.md).
+
 ## Onde editar
 
 - **Telefone, endereço, horário, dias de funcionamento, Instagram, domínio do site:** `src/config.ts`
   - `openTime` / `closeTime` / `openDays` controlam os horários oferecidos no agendamento.
   - `instagram`: preencha com o link completo para mostrar o ícone no rodapé e no contato.
   - `siteUrl`: preencha com o domínio para gerar `canonical`, `og:url` e `sitemap.xml`.
-- **Serviços, preços e duração:** `src/data/services.ts`
-- **Fotos da galeria:** `src/components/GallerySection.tsx` (coloque fotos próprias em `public/galeria/`)
+- **Serviços, tipos de corte e galeria padrão** (usados enquanto o painel não estiver configurado): `src/data/`
 - **Cores e fontes:** `src/index.css` (bloco `@theme`)
 
 Os dados para o Google (JSON-LD), `robots.txt`, `sitemap.xml` e o manifest são gerados no build a partir
