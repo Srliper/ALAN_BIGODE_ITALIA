@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Menu, X, Crown } from 'lucide-react';
+import { business } from '@/config';
 
 const navLinks = [
   { href: '#home', label: 'Home' },
@@ -35,11 +36,11 @@ const Navbar = () => {
           <a href="#home" className="flex items-center gap-2" onClick={() => setIsOpen(false)}>
             <Crown className="w-7 h-7 text-primary" />
             <span className="font-display text-xl md:text-2xl font-bold text-gradient-gold tracking-wide">
-              Barbearia Italia
+              {business.name}
             </span>
           </a>
 
-          <ul className="hidden lg:flex items-center gap-6 xl:gap-8">
+          <ul className="hidden xl:flex items-center gap-8">
             {navLinks.map((link) => (
               <li key={link.href}>
                 <a
@@ -55,14 +56,14 @@ const Navbar = () => {
 
           <a
             href="#booking"
-            className="hidden lg:inline-flex bg-gradient-gold text-primary-foreground font-semibold px-5 py-2.5 rounded-full hover:opacity-90 transition-opacity glow-gold-sm"
+            className="hidden xl:inline-flex bg-gradient-gold text-primary-foreground font-semibold px-5 py-2.5 rounded-full hover:opacity-90 transition-opacity glow-gold-sm"
           >
             Agendar Agora
           </a>
 
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="lg:hidden text-foreground p-2"
+            className="xl:hidden text-foreground p-2"
             aria-label={isOpen ? 'Fechar menu' : 'Abrir menu'}
             aria-expanded={isOpen}
           >
@@ -70,7 +71,7 @@ const Navbar = () => {
           </button>
         </div>
 
-        <div className={`lg:hidden overflow-hidden transition-all duration-300 ${isOpen ? 'max-h-[32rem] pb-6' : 'max-h-0'}`}>
+        <div className={`xl:hidden overflow-hidden transition-all duration-300 ${isOpen ? 'max-h-[32rem] pb-6' : 'max-h-0'}`}>
           <ul className="flex flex-col gap-2">
             {navLinks.map((link) => (
               <li key={link.href}>

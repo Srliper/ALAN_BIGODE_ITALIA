@@ -7,7 +7,7 @@ const contactInfo = [
     icon: MessageCircle,
     title: 'WhatsApp',
     content: business.phoneDisplay,
-    href: whatsappLink('Olá! Vim pelo site da Barbearia Italia.'),
+    href: whatsappLink('Olá! Vim pelo site da Barbearia Bigode Italia.'),
   },
   {
     icon: Phone,
@@ -83,7 +83,7 @@ const ContactSection = () => {
 
           <div className="rounded-2xl overflow-hidden border border-primary/30 min-h-[320px] bg-secondary">
             <iframe
-              title="Mapa — Barbearia Italia"
+              title="Mapa — Barbearia Bigode Italia"
               src={business.mapsEmbed}
               className="w-full h-full min-h-[320px] border-0 grayscale-[60%] invert-[90%] hue-rotate-180"
               loading="lazy"

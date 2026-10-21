@@ -4,7 +4,7 @@ import { trackEvent } from '@/lib/analytics';
 
 const WhatsAppButton = () => (
   <a
-    href={whatsappLink('Olá! Vim pelo site da Barbearia Italia.')}
+    href={whatsappLink('Olá! Vim pelo site da Barbearia Bigode Italia.')}
     target="_blank"
     rel="noopener noreferrer"
     aria-label="Falar no WhatsApp"

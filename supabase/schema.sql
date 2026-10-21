@@ -1,4 +1,4 @@
--- Painel admin da Barbearia Italia — rode este arquivo inteiro (pode rodar de novo sem problema) no Supabase (SQL Editor → New query → Run).
+-- Painel admin da Barbearia Bigode Italia — rode este arquivo inteiro (pode rodar de novo sem problema) no Supabase (SQL Editor → New query → Run).
 -- Cria as tabelas, as permissões (qualquer um lê, só quem está logado altera), o bucket de fotos
 -- e preenche com os dados atuais do site.
 
@@ -121,5 +121,5 @@ select title, image_url, sort from (values
 where not exists (select 1 from public.gallery);
 
 insert into public.team (name, role, bio, instagram, sort)
-select 'Alan Bedim', 'Dono', 'Fundador e dono da Barbearia Italia.', 'https://www.instagram.com/alan70bedim/', 0
+select 'Alan Bedim', 'Dono', 'Fundador e dono da Barbearia Bigode Italia.', 'https://www.instagram.com/alan70bedim/', 0
 where not exists (select 1 from public.team);

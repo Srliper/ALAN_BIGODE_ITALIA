@@ -1,6 +1,6 @@
 // Dados da barbearia — altere aqui e o site inteiro é atualizado.
 export const business = {
-  name: 'Barbearia Italia',
+  name: 'Barbearia Bigode Italia',
   phoneDisplay: '(15) 99964-8684',
   // Somente dígitos, com DDI 55 — usado em links tel: e WhatsApp
   phoneDigits: '5515999648684',

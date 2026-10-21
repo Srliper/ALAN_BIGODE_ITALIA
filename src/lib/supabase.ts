@@ -10,9 +10,8 @@ export const PHOTOS_BUCKET = 'fotos';
 
 // Leitura pública via REST, sem carregar a biblioteca do Supabase para os visitantes
 export async function fetchRows<T>(table: string, query: string): Promise<T[]> {
-  const res = await fetch(`${url}/rest/v1/${table}?${query}`, {
-    headers: { apikey: anonKey!, Authorization: `Bearer ${anonKey}` },
-  });
+  // Só o header apikey: funciona com a chave publishable (sb_publishable_…) e com a anon antiga
+  const res = await fetch(`${url}/rest/v1/${table}?${query}`, { headers: { apikey: anonKey! } });
   if (!res.ok) throw new Error(`Falha ao carregar ${table}: ${res.status}`);
   return res.json();
 }

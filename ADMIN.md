@@ -38,17 +38,14 @@ um e-mail) ou apague o usuário e crie de novo com a senha nova.
    conta e alterar o site.
 4. **Crie o login do dono (Alan):** **Authentication → Users → Add user → Create new user**. Informe o e-mail do Alan,
    digite a **senha escolhida para o painel** e marque **Auto Confirm User**.
-5. **Ligue o site ao Supabase:** em **Project Settings → API** (ou **Data API**), copie a **Project URL** e a
-   chave **anon public**. Na Vercel, abra o projeto → **Settings → Environment Variables** e adicione:
+5. **Ligue o site ao Supabase:** o jeito mais fácil é a integração **Supabase** da Vercel (Vercel → projeto →
+   **Storage/Integrations → Supabase**), que cria sozinha `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` e as outras.
+   O site usa **apenas** a URL e a chave pública (publishable ou anon); as secretas (`SERVICE_ROLE`, `SECRET_KEY`,
+   senha do banco) nunca entram no código do navegador.
 
-   | Nome | Valor |
-   |---|---|
-   | `VITE_SUPABASE_URL` | a Project URL (ex.: `https://abcd1234.supabase.co`) |
-   | `VITE_SUPABASE_ANON_KEY` | a chave anon public |
-   | `VITE_ADMIN_EMAIL` | o mesmo e-mail do passo 4 (opcional: com ele o login pede só a senha) |
+   Opcional: adicione `ADMIN_EMAIL` com o e-mail do passo 4. Com ela, o login pede **só a senha**.
 
-   A chave *anon* é pública por natureza (fica no navegador); a segurança vem das regras criadas no passo 2.
-   **Nunca** use a chave `service_role` aqui.
+   (Sem a integração, dá para cadastrar à mão `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY`.)
 6. **Faça um novo deploy** na Vercel (Deployments → ⋯ → Redeploy) e acesse `https://SEU-SITE/admin`.
 
 Para rodar localmente com o painel, crie um arquivo `.env.local` com as mesmas duas variáveis.

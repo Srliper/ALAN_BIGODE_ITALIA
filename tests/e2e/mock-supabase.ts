@@ -51,7 +51,7 @@ const seed = () => ({
       id: 1,
       name: 'Alan Bedim',
       role: 'Dono',
-      bio: 'Fundador e dono da Barbearia Italia.',
+      bio: 'Fundador e dono da Barbearia Bigode Italia.',
       instagram: 'https://www.instagram.com/alan70bedim/',
       photo_url: '',
       storage_path: null,

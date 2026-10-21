@@ -19,7 +19,7 @@ const TeamSection = () => {
   return (
     <section id="team" className="py-24 relative overflow-hidden">
       <div className="container mx-auto px-4 relative z-10">
-        <SectionHeading eyebrow="Quem faz a Italia" title="Nossa Equipe" />
+        <SectionHeading eyebrow="Quem faz a Bigode Italia" title="Nossa Equipe" />
 
         <div className="flex flex-wrap justify-center gap-8">
           {team.map((member) => {

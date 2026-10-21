@@ -1,4 +1,4 @@
-# Checklist — Barbearia Italia
+# Checklist — Barbearia Bigode Italia
 
 Legenda: ✅ feito · 🔧 você precisa fazer · 📋 precisa de material/decisão sua
 

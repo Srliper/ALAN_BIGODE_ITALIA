@@ -1,6 +1,6 @@
-# Barbearia Italia
+# Barbearia Bigode Italia
 
-Site da Barbearia Italia (Itapetininga - SP), feito com Vite + React + Tailwind CSS v4.
+Site da Barbearia Bigode Italia (Itapetininga - SP), feito com Vite + React + Tailwind CSS v4.
 
 ## Rodando localmente
 
