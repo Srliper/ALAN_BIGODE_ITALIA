@@ -27,7 +27,7 @@ Configuração e login: veja [ADMIN.md](ADMIN.md). Pendências: [CHECKLIST.md](C
   - `instagram`: preencha com o link completo para mostrar o ícone no rodapé e no contato.
   - `siteUrl`: preencha com o domínio para gerar `canonical`, `og:url` e `sitemap.xml`.
 - **Serviços, tipos de corte e galeria padrão** (usados enquanto o painel não estiver configurado): `src/data/`
-- **Logo e arquivos da marca:** `public/marca/` (símbolo em SVG e PNGs) — prompts de vídeo em `docs/PROMPT-VIDEO.md`
+- **Logo e arquivos da marca:** `public/marca/` (símbolo em SVG e PNGs, capas de destaques do Instagram); ícones em `src/components/BrandIcon.tsx` — prompts de vídeo em `docs/PROMPT-VIDEO.md`
 - **Cores e fontes:** `src/index.css` (bloco `@theme`)
 
 Os dados para o Google (JSON-LD), `robots.txt`, `sitemap.xml` e o manifest são gerados no build a partir

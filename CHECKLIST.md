@@ -24,6 +24,8 @@ Legenda: ✅ feito · 🔧 você precisa fazer · 📋 precisa de material/decis
 - 🔧 Acessar `alan-bigode-italia.vercel.app/admin` com `@alanbigode` e conferir
 
 ## Conteúdo
+- ✅ Ícones dourados próprios (estilo "link na bio") nos atalhos abaixo do topo do site
+- ✅ Capas de destaques do Instagram (8 ícones, contorno e dourado) em `public/marca/destaques-instagram/`
 - ✅ Loja de produtos (seção "Nossos Produtos" + carrinho + pedido pelo WhatsApp) e aba Produtos no painel
 - 🔧 Rodar de novo o `supabase/schema.sql` (cria a tabela de produtos; pode rodar sem medo, não apaga nada)
 - 📋 Colocar preço e foto dos produtos no painel e marcar "Mostrar no site"
@@ -58,5 +60,5 @@ Legenda: ✅ feito · 🔧 você precisa fazer · 📋 precisa de material/decis
 - ✅ Removido react-router-dom (site mais leve); painel carregado só em `/admin`
 - ✅ Galeria ampliada acessível por teclado
 - ✅ ESLint, typecheck e CI no GitHub Actions
-- ✅ 41 testes automáticos do site e do painel (computador e celular)
+- ✅ 43 testes automáticos do site e do painel (computador e celular)
 - 🔧 Horário de funcionamento e telefone continuam em `src/config.ts` (não estão no painel)
