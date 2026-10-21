@@ -63,3 +63,15 @@ export interface TeamRow {
   storage_path: string | null;
   sort: number;
 }
+
+export interface ProductRow {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  image_url: string;
+  category: string;
+  in_stock: boolean;
+  active: boolean;
+  sort: number;
+}

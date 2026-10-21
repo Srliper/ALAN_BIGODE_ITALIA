@@ -3,6 +3,9 @@
 No painel, a barbearia altera sozinha, sem mexer no código:
 
 - **Serviços e preços:** nome, preço, duração, descrição, foto, selo (ex.: "Promoção") e se o serviço aparece no site
+- **Produtos à venda** (pomada, modelador, óleo de barba…): preço, foto, categoria, estoque. O cliente monta o
+  pedido no site e envia pelo WhatsApp; retirada e pagamento na barbearia. Os produtos sugeridos começam
+  escondidos e sem preço
 - **Tipos de corte** do formulário de agendamento
 - **Galeria:** envio de fotos dos cortes reais direto do celular (as fotos são reduzidas automaticamente)
 - **Equipe:** perfis da seção "Nossa Equipe" (foto, cargo, texto e Instagram). O dono, Alan Bedim, já vem cadastrado
@@ -64,5 +67,5 @@ mostra um aviso explicando estes passos.
 ## Testes
 
 `npm run test:e2e` testa o site e o painel inteiro (login com usuário e senha certos e errados, tutorial, alterar preço,
-esconder e criar serviço com foto, perfil do dono e equipe, tipos de corte, envio e exclusão de fotos da galeria, agendamento pelo
+esconder e criar serviço com foto, produtos e pedido pelo WhatsApp, perfil do dono e equipe, tipos de corte, envio e exclusão de fotos da galeria, agendamento pelo
 WhatsApp) no computador e no celular, usando um Supabase simulado. Roda também no GitHub Actions a cada PR.

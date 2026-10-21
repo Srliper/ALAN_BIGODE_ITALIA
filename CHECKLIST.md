@@ -24,6 +24,9 @@ Legenda: ✅ feito · 🔧 você precisa fazer · 📋 precisa de material/decis
 - 🔧 Acessar `alan-bigode-italia.vercel.app/admin` com `@alanbigode` e conferir
 
 ## Conteúdo
+- ✅ Loja de produtos (seção "Nossos Produtos" + carrinho + pedido pelo WhatsApp) e aba Produtos no painel
+- 🔧 Rodar de novo o `supabase/schema.sql` (cria a tabela de produtos; pode rodar sem medo, não apaga nada)
+- 📋 Colocar preço e foto dos produtos no painel e marcar "Mostrar no site"
 - ✅ Logo próprio (coroa + bigode + bandeira italiana) aplicado no site, favicon, ícone do celular e imagem de compartilhamento — arquivos em `public/marca/`
 - ✅ Prompts de vídeo para animar o logo e fazer Reels: [docs/PROMPT-VIDEO.md](docs/PROMPT-VIDEO.md)
 - 📋 Gerar os vídeos no app de IA e me mandar o vídeo de fundo do site (MP4, até 8 MB)
@@ -55,5 +58,5 @@ Legenda: ✅ feito · 🔧 você precisa fazer · 📋 precisa de material/decis
 - ✅ Removido react-router-dom (site mais leve); painel carregado só em `/admin`
 - ✅ Galeria ampliada acessível por teclado
 - ✅ ESLint, typecheck e CI no GitHub Actions
-- ✅ 35 testes automáticos do site e do painel (computador e celular)
+- ✅ 41 testes automáticos do site e do painel (computador e celular)
 - 🔧 Horário de funcionamento e telefone continuam em `src/config.ts` (não estão no painel)

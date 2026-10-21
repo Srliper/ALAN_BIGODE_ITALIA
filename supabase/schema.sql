@@ -39,10 +39,23 @@ create table if not exists public.team (
   sort int not null default 0
 );
 
+create table if not exists public.products (
+  id text primary key,
+  name text not null,
+  description text not null default '',
+  price numeric(10, 2) not null default 0 check (price >= 0),
+  image_url text not null default '',
+  category text not null default '',
+  in_stock boolean not null default true,
+  active boolean not null default false,
+  sort int not null default 0
+);
+
 alter table public.services enable row level security;
 alter table public.cut_types enable row level security;
 alter table public.gallery enable row level security;
 alter table public.team enable row level security;
+alter table public.products enable row level security;
 
 -- Leitura pública (o site) e escrita só para usuários logados (o painel).
 -- IMPORTANTE: desative o cadastro público em Authentication → Sign In / Providers → "Allow new users to sign up".
@@ -62,6 +75,10 @@ drop policy if exists "leitura publica" on public.team;
 create policy "leitura publica" on public.team for select using (true);
 drop policy if exists "admin altera" on public.team;
 create policy "admin altera" on public.team for all to authenticated using (true) with check (true);
+drop policy if exists "leitura publica" on public.products;
+create policy "leitura publica" on public.products for select using (true);
+drop policy if exists "admin altera" on public.products;
+create policy "admin altera" on public.products for all to authenticated using (true) with check (true);
 
 -- Bucket público para as fotos (serviços e galeria)
 insert into storage.buckets (id, name, public) values ('fotos', 'fotos', true) on conflict (id) do nothing;
@@ -123,3 +140,18 @@ where not exists (select 1 from public.gallery);
 insert into public.team (name, role, bio, instagram, sort)
 select 'Alan Bedim', 'Dono', 'Fundador e dono da Barbearia Bigode Italia.', 'https://www.instagram.com/alan70bedim/', 0
 where not exists (select 1 from public.team);
+
+-- Produtos sugeridos: entram ESCONDIDOS e SEM PREÇO. No painel (aba Produtos), coloque preço e foto e marque
+-- "Mostrar no site".
+insert into public.products (id, name, description, category, price, active, sort) values
+  ('pomada-matte', 'Pomada Modeladora Efeito Matte', 'Fixação forte e acabamento sem brilho.', 'Cabelo', 0, false, 0),
+  ('pomada-brilho', 'Pomada Modeladora Efeito Brilho', 'Fixação média com brilho, para penteados clássicos.', 'Cabelo', 0, false, 1),
+  ('cera-modeladora', 'Cera Modeladora', 'Modela e dá textura com acabamento natural.', 'Cabelo', 0, false, 2),
+  ('gel-fixador', 'Gel Fixador', 'Fixação extra forte que dura o dia todo.', 'Cabelo', 0, false, 3),
+  ('po-modelador', 'Pó Modelador', 'Dá volume e textura sem pesar.', 'Cabelo', 0, false, 4),
+  ('oleo-barba', 'Óleo para Barba', 'Hidrata, amacia e perfuma a barba.', 'Barba', 0, false, 5),
+  ('balm-barba', 'Balm para Barba', 'Hidrata e ajuda a modelar os fios rebeldes.', 'Barba', 0, false, 6),
+  ('shampoo-barba', 'Shampoo para Barba', 'Limpa a barba sem ressecar a pele.', 'Barba', 0, false, 7),
+  ('pos-barba', 'Loção Pós-barba', 'Acalma e refresca a pele depois do barbear.', 'Barba', 0, false, 8),
+  ('pente-madeira', 'Pente de Madeira', 'Desembaraça cabelo e barba sem eletricidade estática.', 'Acessórios', 0, false, 9)
+on conflict (id) do nothing;
