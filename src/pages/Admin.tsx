@@ -11,7 +11,7 @@ import { formatDuration } from '@/data/services';
 import { deletePhoto, uploadPhoto } from '@/lib/images';
 import { getSupabase, isSupabaseConfigured, type CutTypeRow, type GalleryRow, type ServiceRow } from '@/lib/supabase';
 
-type Tab = 'services' | 'cuts' | 'gallery';
+type Tab = 'help' | 'services' | 'cuts' | 'gallery';
 
 // Executa uma ação do painel mostrando erro ou sucesso num aviso
 const run = async (action: () => Promise<unknown>, success?: string) => {
@@ -81,8 +81,11 @@ const NotConfigured = () => (
   </div>
 );
 
+// Com VITE_ADMIN_EMAIL definido, o login pede só a senha
+const adminEmail = import.meta.env.VITE_ADMIN_EMAIL;
+
 const Login = () => {
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(adminEmail ?? '');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -95,7 +98,7 @@ const Login = () => {
         email,
         password,
       });
-      if (error) throw new Error('E-mail ou senha incorretos.');
+      if (error) throw new Error(adminEmail ? 'Senha incorreta.' : 'E-mail ou senha incorretos.');
     });
     setLoading(false);
   };
@@ -106,18 +109,23 @@ const Login = () => {
       className="max-w-sm mx-auto bg-card border border-border rounded-xl p-6 space-y-4 mt-10"
     >
       <h1 className="text-2xl font-bold text-foreground">Entrar no painel</h1>
-      <div className="space-y-2">
-        <Label htmlFor="email">E-mail</Label>
-        <Input
-          id="email"
-          type="email"
-          autoComplete="username"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full"
-          required
-        />
-      </div>
+      {adminEmail ? (
+        // Campo escondido para o gerenciador de senhas do navegador saber de qual conta é a senha
+        <input type="email" autoComplete="username" value={email} readOnly hidden />
+      ) : (
+        <div className="space-y-2">
+          <Label htmlFor="email">E-mail</Label>
+          <Input
+            id="email"
+            type="email"
+            autoComplete="username"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full"
+            required
+          />
+        </div>
+      )}
       <div className="space-y-2">
         <Label htmlFor="password">Senha</Label>
         <Input
@@ -503,7 +511,7 @@ const CutsTab = () => {
               key={row.name}
               onBlur={(e) => rename(row, e.target.value)}
               aria-label="Nome do tipo de corte"
-              className="flex-1"
+              className="flex-1 min-w-0"
             />
             <MoveButtons
               first={i === 0}
@@ -652,7 +660,126 @@ const GalleryTab = () => {
 
 // ---------- Página ----------
 
+// ---------- Como usar ----------
+
+const HelpStep = ({ n, title, children }: { n: number; title: string; children: ReactNode }) => (
+  <li className="flex gap-4 bg-card border border-border rounded-xl p-4 md:p-5">
+    <span className="shrink-0 w-8 h-8 rounded-full bg-gradient-gold text-primary-foreground font-bold flex items-center justify-center">
+      {n}
+    </span>
+    <div className="space-y-2 text-sm text-muted-foreground leading-relaxed">
+      <h3 className="text-base font-semibold text-foreground">{title}</h3>
+      {children}
+    </div>
+  </li>
+);
+
+const HelpTab = ({ goTo }: { goTo: (tab: Tab) => void }) => {
+  const link = (tab: Tab, label: string) => (
+    <button type="button" onClick={() => goTo(tab)} className="text-primary font-semibold hover:underline">
+      {label}
+    </button>
+  );
+
+  return (
+    <div className="space-y-4">
+      <p className="text-muted-foreground">
+        Bem-vindo ao painel! Tudo o que você alterar aqui aparece no site na hora, para todos os clientes. Siga os
+        passos abaixo:
+      </p>
+      <ol className="space-y-3">
+        <HelpStep n={1} title="Alterar preços e serviços">
+          <p>Abra a aba {link('services', 'Serviços e preços')}. Cada serviço tem um cartão:</p>
+          <ul className="list-disc pl-5 space-y-1">
+            <li>
+              Mude o <b>preço</b>, a <b>duração</b> (em minutos), o nome ou a descrição.
+            </li>
+            <li>
+              Clique em <b>Salvar</b> no cartão. O botão só acende quando há alguma mudança.
+            </li>
+            <li>
+              A duração decide os horários do agendamento: um serviço de 90 min não aparece às 20:30, porque passaria do
+              fechamento.
+            </li>
+            <li>
+              <b>Selo</b> (opcional) é a etiqueta dourada em cima da foto, ex.: "Promoção" ou "Novo". Use "Semanal" para
+              o cliente ser avisado de que o horário se repete toda semana.
+            </li>
+            <li>
+              Desmarque <b>Mostrar no site</b> para esconder um serviço sem apagar (ex.: fora de temporada).
+            </li>
+            <li>
+              Use <b>Adicionar serviço</b> no fim da lista para criar um novo, e as setas ↑ ↓ para mudar a ordem.
+            </li>
+          </ul>
+        </HelpStep>
+        <HelpStep n={2} title="Trocar a foto de um serviço">
+          <p>
+            No cartão do serviço, toque em <b>Trocar foto</b>, escolha a foto (pelo celular pode tirar na hora) e depois
+            clique em <b>Salvar</b>. A foto é reduzida automaticamente, então pode mandar a original da câmera.
+          </p>
+        </HelpStep>
+        <HelpStep n={3} title="Colocar fotos dos cortes na galeria">
+          <p>Abra a aba {link('gallery', 'Galeria')}:</p>
+          <ul className="list-disc pl-5 space-y-1">
+            <li>
+              Digite um título (ex.: "Low fade com risco") e toque em <b>Adicionar fotos</b>. Dá para escolher várias de
+              uma vez; todas recebem o mesmo título.
+            </li>
+            <li>Para mudar um título, edite o texto embaixo da foto e toque fora do campo; ele salva sozinho.</li>
+            <li>Use as setas para escolher quais fotos aparecem primeiro e a lixeira para excluir.</li>
+            <li>Dica: fotos bem iluminadas, de lado e de costas, mostram melhor o acabamento.</li>
+          </ul>
+        </HelpStep>
+        <HelpStep n={4} title="Tipos de corte do agendamento">
+          <p>
+            Na aba {link('cuts', 'Tipos de corte')} ficam as opções que o cliente escolhe ao agendar. Escreva um novo e
+            clique em <b>Adicionar</b>. Para renomear, edite e toque fora do campo. Setas mudam a ordem; a lixeira
+            remove.
+          </p>
+        </HelpStep>
+        <HelpStep n={5} title="Conferir no site e sair">
+          <p>
+            Clique em <b>Ver o site ↗</b> para conferir as mudanças. Quando terminar, clique em <b>Sair</b>,
+            principalmente se estiver num computador ou celular de outra pessoa.
+          </p>
+        </HelpStep>
+      </ol>
+      <div className="bg-primary/10 border border-primary/30 rounded-xl p-4 text-sm text-muted-foreground space-y-1">
+        <p className="font-semibold text-foreground">O que não fica no painel</p>
+        <p>
+          Telefone, endereço e horário de funcionamento são alterados no código (arquivo <code>src/config.ts</code>). Os
+          agendamentos continuam chegando pelo WhatsApp.
+        </p>
+      </div>
+      <Button type="button" onClick={() => goTo('services')} className="w-full">
+        Começar pelos serviços e preços
+      </Button>
+    </div>
+  );
+};
+
+// Na primeira vez, o painel abre no tutorial
+const TUTORIAL_KEY = 'admin-tutorial-visto';
+
+const initialTab = (): Tab => {
+  try {
+    return localStorage.getItem(TUTORIAL_KEY) ? 'services' : 'help';
+  } catch {
+    return 'help';
+  }
+};
+
+const markTutorialSeen = () => {
+  try {
+    localStorage.setItem(TUTORIAL_KEY, '1');
+  } catch {
+    // sem armazenamento local: o tutorial volta a abrir na próxima vez
+  }
+};
+
 const tabs: { id: Tab; label: string }[] = [
+  { id: 'help', label: 'Como usar' },
   { id: 'services', label: 'Serviços e preços' },
   { id: 'cuts', label: 'Tipos de corte' },
   { id: 'gallery', label: 'Galeria' },
@@ -660,7 +787,7 @@ const tabs: { id: Tab; label: string }[] = [
 
 const Admin = () => {
   const [session, setSession] = useState<Session | null | undefined>(undefined);
-  const [tab, setTab] = useState<Tab>('services');
+  const [tab, setTab] = useState<Tab>(initialTab);
 
   useEffect(() => {
     const meta = document.createElement('meta');
@@ -670,6 +797,10 @@ const Admin = () => {
     document.title = `Admin | ${business.name}`;
     return () => meta.remove();
   }, []);
+
+  useEffect(() => {
+    if (session) markTutorialSeen();
+  }, [session]);
 
   useEffect(() => {
     if (!isSupabaseConfigured) return;
@@ -728,6 +859,7 @@ const Admin = () => {
           </button>
         ))}
       </nav>
+      {tab === 'help' && <HelpTab goTo={setTab} />}
       {tab === 'services' && <ServicesTab />}
       {tab === 'cuts' && <CutsTab />}
       {tab === 'gallery' && <GalleryTab />}

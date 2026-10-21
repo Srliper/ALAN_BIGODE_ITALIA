@@ -8,11 +8,20 @@ No painel, a barbearia altera sozinha, sem mexer no código:
 
 As alterações aparecem no site na hora, sem novo deploy.
 
-## Não existe senha padrão
+## Como acessar
 
-Por segurança, nenhuma senha fica no código. Quem cria o login e a senha é o dono da barbearia, no passo 4
-abaixo, e só ele sabe qual é. Se esquecer, é só trocar no Supabase (Authentication → Users → ⋯ → Reset password,
-ou apagar e criar o usuário de novo).
+Abra o endereço do site com `/admin` no final, por exemplo `https://SEU-SITE.vercel.app/admin`
+(ou `https://seudominio.com.br/admin`). Funciona no computador e no celular. Na primeira entrada o painel
+abre na aba **Como usar**, com o tutorial de cada função.
+
+## Senha
+
+A senha **não fica no código** (o código do site é público e qualquer pessoa conseguiria lê-la). Ela fica
+guardada, criptografada, no Supabase. A senha escolhida pelo dono é cadastrada no **passo 4** abaixo, junto com
+um e-mail. Com a variável `VITE_ADMIN_EMAIL` (passo 5), a tela de login pede **só a senha**.
+
+Para trocar a senha depois: Supabase → **Authentication → Users** → clique no usuário → **Reset password** (envia
+um e-mail) ou apague o usuário e crie de novo com a senha nova.
 
 ## Configuração (uma vez só, ~10 minutos)
 
@@ -25,8 +34,8 @@ ou apagar e criar o usuário de novo).
 3. **Bloqueie novos cadastros:** **Authentication → Sign In / Providers →** desligue
    **"Allow new users to sign up"**. ⚠️ Esse passo é obrigatório: sem ele, qualquer pessoa poderia criar uma
    conta e alterar o site.
-4. **Crie o login do dono:** **Authentication → Users → Add user → Create new user**. Informe o e-mail e a senha
-   que vão ser usados no painel e marque **Auto Confirm User**.
+4. **Crie o login do dono:** **Authentication → Users → Add user → Create new user**. Informe um e-mail do dono,
+   digite a **senha escolhida para o painel** e marque **Auto Confirm User**.
 5. **Ligue o site ao Supabase:** em **Project Settings → API** (ou **Data API**), copie a **Project URL** e a
    chave **anon public**. Na Vercel, abra o projeto → **Settings → Environment Variables** e adicione:
 
@@ -34,6 +43,7 @@ ou apagar e criar o usuário de novo).
    |---|---|
    | `VITE_SUPABASE_URL` | a Project URL (ex.: `https://abcd1234.supabase.co`) |
    | `VITE_SUPABASE_ANON_KEY` | a chave anon public |
+   | `VITE_ADMIN_EMAIL` | o mesmo e-mail do passo 4 (opcional: com ele o login pede só a senha) |
 
    A chave *anon* é pública por natureza (fica no navegador); a segurança vem das regras criadas no passo 2.
    **Nunca** use a chave `service_role` aqui.
@@ -45,3 +55,9 @@ Para rodar localmente com o painel, crie um arquivo `.env.local` com as mesmas d
 
 Enquanto as variáveis não existirem, o site funciona normalmente com os dados de `src/data/` e o `/admin`
 mostra um aviso explicando estes passos.
+
+## Testes
+
+`npm run test:e2e` testa o site e o painel inteiro (login com senha certa e errada, tutorial, alterar preço,
+esconder e criar serviço com foto, tipos de corte, envio e exclusão de fotos da galeria, agendamento pelo
+WhatsApp) no computador e no celular, usando um Supabase simulado. Roda também no GitHub Actions a cada PR.
