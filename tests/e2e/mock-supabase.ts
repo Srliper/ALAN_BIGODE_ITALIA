@@ -106,7 +106,7 @@ export async function mockSupabase(context: BrowserContext) {
     if (path.startsWith('/auth/v1/token')) {
       const body = req.postDataJSON();
       if (body.email !== ADMIN_LOGIN_EMAIL || body.password !== ADMIN_PASSWORD) {
-        return json(route, { error: 'invalid_grant', error_description: 'Invalid login credentials' }, 400);
+        return json(route, { code: 400, error_code: 'invalid_credentials', msg: 'Invalid login credentials' }, 400);
       }
       return json(route, {
         access_token: 'token-de-teste',

@@ -89,6 +89,15 @@ const NotConfigured = () => (
   </div>
 );
 
+// Traduz a recusa do Supabase para o dono saber o que corrigir
+const loginErrorMessage = (code: string | undefined, message: string) => {
+  if (code === 'email_not_confirmed' || /not confirmed/i.test(message))
+    return 'Usuário ainda não confirmado no Supabase. Confirme o usuário em Authentication → Users.';
+  if (code === 'invalid_credentials' || /invalid login credentials/i.test(message))
+    return 'Usuário ou senha incorretos.';
+  return `Não foi possível entrar: ${message}`;
+};
+
 const Login = () => {
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
@@ -103,7 +112,7 @@ const Login = () => {
         email: loginToEmail(login),
         password,
       });
-      if (error) throw new Error('Usuário ou senha incorretos.');
+      if (error) throw new Error(loginErrorMessage(error.code, error.message));
     });
     setLoading(false);
   };
