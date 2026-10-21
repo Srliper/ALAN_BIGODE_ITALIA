@@ -1,8 +1,9 @@
 import { expect, test, type Page } from '@playwright/test';
-import { ADMIN_PASSWORD, PIXEL, mockSupabase } from './mock-supabase';
+import { ADMIN_LOGIN, ADMIN_PASSWORD, PIXEL, mockSupabase } from './mock-supabase';
 
-const login = async (page: Page, password = ADMIN_PASSWORD) => {
+const login = async (page: Page, password = ADMIN_PASSWORD, user = ADMIN_LOGIN) => {
   await page.goto('/admin');
+  await page.getByLabel('Usuário').fill(user);
   await page.getByLabel('Senha').fill(password);
   await page.getByRole('button', { name: 'Entrar' }).click();
 };
@@ -14,18 +15,25 @@ test.beforeEach(async ({ context }) => {
   ({ db, uploads } = await mockSupabase(context));
 });
 
-test('pede só a senha e recusa senha errada', async ({ page }) => {
+test('pede usuário e senha e recusa dados errados', async ({ page }) => {
   await page.goto('/admin');
   await expect(page.getByRole('heading', { name: 'Entrar no painel' })).toBeVisible();
-  await expect(page.getByLabel('E-mail')).toHaveCount(0);
+  await expect(page.getByLabel('Usuário')).toHaveAttribute('placeholder', '@usuario');
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex, nofollow');
 
   await login(page, 'senha-errada');
-  await expect(page.getByText('Senha incorreta.')).toBeVisible();
+  await expect(page.getByText('Usuário ou senha incorretos.')).toBeVisible();
+  await login(page, ADMIN_PASSWORD, '@outro');
+  await expect(page.getByText('Usuário ou senha incorretos.').first()).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Painel da barbearia' })).toHaveCount(0);
 });
 
-test('entra com a senha, abre o tutorial na primeira vez e sai', async ({ page }) => {
+test('aceita o usuário com ou sem @ e com maiúsculas', async ({ page }) => {
+  await login(page, ADMIN_PASSWORD, ' AlanBigode ');
+  await expect(page.getByRole('heading', { name: 'Painel da barbearia' })).toBeVisible();
+});
+
+test('entra com @alanbigode e a senha, abre o tutorial na primeira vez e sai', async ({ page }) => {
   await login(page);
   await expect(page.getByRole('heading', { name: 'Painel da barbearia' })).toBeVisible();
   await expect(page.getByRole('tab', { name: 'Como usar' })).toHaveAttribute('aria-selected', 'true');

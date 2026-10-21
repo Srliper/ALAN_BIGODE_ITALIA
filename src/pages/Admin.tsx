@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/hooks/use-toast';
-import { business, formatPrice, instagramHandle, instagramUrl } from '@/config';
+import { business, formatPrice, instagramHandle, instagramUrl, loginToEmail } from '@/config';
 import { formatDuration } from '@/data/services';
 import { defaultTeam, isOwner } from '@/data/team';
 import { deletePhoto, uploadPhoto } from '@/lib/images';
@@ -89,11 +89,8 @@ const NotConfigured = () => (
   </div>
 );
 
-// Com VITE_ADMIN_EMAIL definido, o login pede só a senha
-const adminEmail = import.meta.env.VITE_ADMIN_EMAIL;
-
 const Login = () => {
-  const [email, setEmail] = useState(adminEmail ?? '');
+  const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -103,10 +100,10 @@ const Login = () => {
     await run(async () => {
       const supabase = await getSupabase();
       const { error } = await supabase.auth.signInWithPassword({
-        email,
+        email: loginToEmail(login),
         password,
       });
-      if (error) throw new Error(adminEmail ? 'Senha incorreta.' : 'E-mail ou senha incorretos.');
+      if (error) throw new Error('Usuário ou senha incorretos.');
     });
     setLoading(false);
   };
@@ -117,23 +114,21 @@ const Login = () => {
       className="max-w-sm mx-auto bg-card border border-border rounded-xl p-6 space-y-4 mt-10"
     >
       <h1 className="text-2xl font-bold text-foreground">Entrar no painel</h1>
-      {adminEmail ? (
-        // Campo escondido para o gerenciador de senhas do navegador saber de qual conta é a senha
-        <input type="email" autoComplete="username" value={email} readOnly hidden />
-      ) : (
-        <div className="space-y-2">
-          <Label htmlFor="email">E-mail</Label>
-          <Input
-            id="email"
-            type="email"
-            autoComplete="username"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full"
-            required
-          />
-        </div>
-      )}
+      <div className="space-y-2">
+        <Label htmlFor="login">Usuário</Label>
+        <Input
+          id="login"
+          autoComplete="username"
+          autoCapitalize="none"
+          autoCorrect="off"
+          spellCheck={false}
+          value={login}
+          onChange={(e) => setLogin(e.target.value)}
+          placeholder="@usuario"
+          className="w-full"
+          required
+        />
+      </div>
       <div className="space-y-2">
         <Label htmlFor="password">Senha</Label>
         <Input

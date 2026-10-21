@@ -1,7 +1,9 @@
 import type { BrowserContext, Route } from '@playwright/test';
 import { SUPABASE_URL } from '../../playwright.config';
 
-// Senha só dos testes. A senha real do painel fica apenas no Supabase, nunca no repositório.
+// Usuário do painel e senha só dos testes. A senha real fica apenas no Supabase, nunca no repositório.
+export const ADMIN_LOGIN = '@alanbigode';
+export const ADMIN_LOGIN_EMAIL = 'alanbigode@barbeariabigodeitalia.com';
 export const ADMIN_PASSWORD = 'senha-de-teste';
 
 type Row = Record<string, unknown> & { id: string | number; sort: number };
@@ -103,7 +105,7 @@ export async function mockSupabase(context: BrowserContext) {
 
     if (path.startsWith('/auth/v1/token')) {
       const body = req.postDataJSON();
-      if (body.password !== ADMIN_PASSWORD) {
+      if (body.email !== ADMIN_LOGIN_EMAIL || body.password !== ADMIN_PASSWORD) {
         return json(route, { error: 'invalid_grant', error_description: 'Invalid login credentials' }, 400);
       }
       return json(route, {

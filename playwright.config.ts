@@ -3,7 +3,6 @@ import { defineConfig, devices } from '@playwright/test';
 // Os testes rodam no site de verdade (build de produção) com um Supabase simulado em memória
 // (tests/e2e/mock-supabase.ts), então não precisam de internet nem de conta no Supabase.
 export const SUPABASE_URL = 'https://supabase.test';
-export const ADMIN_EMAIL = 'dono@barbearia.test';
 const PORT = 4175;
 
 export default defineConfig({
@@ -28,7 +27,6 @@ export default defineConfig({
     env: {
       VITE_SUPABASE_URL: SUPABASE_URL,
       VITE_SUPABASE_ANON_KEY: 'anon-key-de-teste',
-      VITE_ADMIN_EMAIL: ADMIN_EMAIL,
     },
   },
 });

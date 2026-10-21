@@ -10,7 +10,7 @@ Legenda: ✅ feito · 🔧 você precisa fazer · 📋 precisa de material/decis
 - 📋 Confirmar a chave PIX correta, se quiser mostrá-la no site
 
 ## Painel admin (`/admin`) — veja [ADMIN.md](ADMIN.md)
-- ✅ Login só com a senha (com `VITE_ADMIN_EMAIL`), sem senha no código
+- ✅ Login com usuário `@alanbigode` + senha, sem senha no código
 - ✅ Tutorial "Como usar" dentro do painel (abre sozinho na primeira entrada)
 - ✅ Alterar preços, duração, descrição, foto e selo dos serviços; esconder/mostrar; adicionar e excluir
 - ✅ Editar, adicionar, remover e ordenar os tipos de corte
@@ -18,9 +18,10 @@ Legenda: ✅ feito · 🔧 você precisa fazer · 📋 precisa de material/decis
 - ✅ Site atualiza na hora com os dados do painel
 - 🔧 Criar o projeto no Supabase e rodar `supabase/schema.sql`
 - 🔧 Desligar "Allow new users to sign up" no Supabase (obrigatório)
-- 🔧 Criar o usuário do dono no Supabase com a senha escolhida
-- 🔧 Colocar `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` e `VITE_ADMIN_EMAIL` na Vercel e fazer redeploy
-- 🔧 Acessar `SEU-SITE/admin` e conferir
+- 🔧 Criar no Supabase o usuário `alanbigode@barbeariabigodeitalia.com` com a senha escolhida
+- ✅ Integração Supabase na Vercel (`SUPABASE_URL` e chave publishable)
+- 🔧 Fazer merge do PR e redeploy
+- 🔧 Acessar `alan-bigode-italia.vercel.app/admin` com `@alanbigode` e conferir
 
 ## Conteúdo
 - ✅ Mais opções de corte (21: low/mid/high/taper fade, navalhado, undercut, moicano, mullet, crop, infantil, freestyle…)
@@ -51,5 +52,5 @@ Legenda: ✅ feito · 🔧 você precisa fazer · 📋 precisa de material/decis
 - ✅ Removido react-router-dom (site mais leve); painel carregado só em `/admin`
 - ✅ Galeria ampliada acessível por teclado
 - ✅ ESLint, typecheck e CI no GitHub Actions
-- ✅ 33 testes automáticos do site e do painel (computador e celular)
+- ✅ 35 testes automáticos do site e do painel (computador e celular)
 - 🔧 Horário de funcionamento e telefone continuam em `src/config.ts` (não estão no painel)

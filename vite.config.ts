@@ -112,7 +112,6 @@ const publicEnv = (mode: string) => {
       'SUPABASE_ANON_KEY',
       'NEXT_PUBLIC_SUPABASE_ANON_KEY',
     ),
-    'import.meta.env.VITE_ADMIN_EMAIL': pick('VITE_ADMIN_EMAIL', 'ADMIN_EMAIL'),
   };
 };
 
