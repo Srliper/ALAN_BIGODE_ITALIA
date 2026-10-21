@@ -10,6 +10,7 @@ import { business, formatPrice, instagramHandle, instagramUrl, loginToEmail } fr
 import { formatDuration } from '@/data/services';
 import { defaultTeam, isOwner } from '@/data/team';
 import { deletePhoto, uploadPhoto } from '@/lib/images';
+import Logo from '@/components/Logo';
 import {
   getSupabase,
   isSupabaseConfigured,
@@ -62,7 +63,7 @@ const Shell = ({ children, onSignOut }: { children: ReactNode; onSignOut?: () =>
     <header className="border-b border-border bg-card">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between gap-4">
         <a href="/" className="flex items-center gap-2">
-          <Crown className="w-6 h-6 text-primary" />
+          <Logo className="w-9 h-9" />
           <span className="font-display text-lg font-bold text-gradient-gold">{business.name}</span>
           <span className="text-xs text-muted-foreground uppercase tracking-widest">admin</span>
         </a>

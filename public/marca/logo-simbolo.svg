@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f3d98a"/>
+      <stop offset=".5" stop-color="#d4a940"/>
+      <stop offset="1" stop-color="#a87a22"/>
+    </linearGradient>
+  </defs>
+  <circle cx="64" cy="64" r="61" fill="#0d0b09" stroke="url(#g)" stroke-width="3"/>
+  <circle cx="64" cy="64" r="54" fill="none" stroke="url(#g)" stroke-width="1" opacity=".6"/>
+  <!-- coroa -->
+  <path d="M44 46 L47 27 L56 36 L64 22 L72 36 L81 27 L84 46 Z" fill="url(#g)" stroke-linejoin="round"/>
+  <circle cx="47" cy="25.5" r="2.4" fill="url(#g)"/><circle cx="64" cy="20" r="2.6" fill="url(#g)"/><circle cx="81" cy="25.5" r="2.4" fill="url(#g)"/>
+  <rect x="44" y="48" width="40" height="4" rx="1.5" fill="url(#g)"/>
+  <!-- bigode -->
+  <g fill="url(#g)" transform="translate(64 69) scale(.86) translate(-64 -69)">
+    <path id="h" d="M64 66 C69 59 79 58 87 63 C93 67 100 67 104 62 C107 58 105 53 100 53 C106 50 113 55 112 63 C111 72 99 78 88 76 C78 74 70 72 64 77 Z"/>
+    <use href="#h" transform="translate(128 0) scale(-1 1)"/>
+  </g>
+  <!-- tricolor -->
+  <rect x="49" y="87" width="10" height="4" fill="#1f8a4c"/>
+  <rect x="59" y="87" width="10" height="4" fill="#f5efe4"/>
+  <rect x="69" y="87" width="10" height="4" fill="#c8352e"/>
+</svg>

@@ -24,11 +24,14 @@ Legenda: ✅ feito · 🔧 você precisa fazer · 📋 precisa de material/decis
 - 🔧 Acessar `alan-bigode-italia.vercel.app/admin` com `@alanbigode` e conferir
 
 ## Conteúdo
+- ✅ Logo próprio (coroa + bigode + bandeira italiana) aplicado no site, favicon, ícone do celular e imagem de compartilhamento — arquivos em `public/marca/`
+- ✅ Prompts de vídeo para animar o logo e fazer Reels: [docs/PROMPT-VIDEO.md](docs/PROMPT-VIDEO.md)
+- 📋 Gerar os vídeos no app de IA e me mandar o vídeo de fundo do site (MP4, até 8 MB)
 - ✅ Mais opções de corte (21: low/mid/high/taper fade, navalhado, undercut, moicano, mullet, crop, infantil, freestyle…)
 - 📋 Fotos reais dos cortes → enviar pelo painel, aba Galeria
 - 📋 Fotos reais de cada serviço → painel, aba Serviços → "Trocar foto"
 - 📋 Foto do hero (topo) e da seção "Sobre" → me mandar os arquivos
-- 📋 Imagem de compartilhamento no WhatsApp (1200×630) → salvar em `public/og.jpg` e trocar `ogImage` no config
+- ✅ Imagem de compartilhamento no WhatsApp (1200×630) com o logo
 - ✅ Seção "Nossa Equipe" no site, com o Alan Bedim como dono (coroa + Instagram @alan70bedim)
 - ✅ Aba Equipe no painel e cartão do dono no topo
 - 📋 Foto do Alan e texto sobre ele → painel, aba Equipe (o nome "Alan Bedim" pode ser corrigido lá)
@@ -40,7 +43,7 @@ Legenda: ✅ feito · 🔧 você precisa fazer · 📋 precisa de material/decis
 - ✅ JSON-LD, robots.txt, sitemap.xml e manifest gerados a partir do config
 - ✅ Vercel Analytics com eventos de clique no WhatsApp
 - 🔧 Ativar Web Analytics no painel da Vercel
-- 📋 Domínio do site → campo `siteUrl` em `src/config.ts` (gera canonical e sitemap)
+- ✅ `siteUrl` = alan-bigode-italia.vercel.app (canonical e sitemap). Trocar se tiver domínio próprio
 - 🔧 Conferir se o Perfil da Empresa no Google aponta para o site
 
 ## Agendamento
