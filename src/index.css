@@ -88,6 +88,14 @@
     box-shadow: 0 0 10px rgba(212, 169, 64, 0.3);
   }
 
+  /* Moldura dourada brilhante (borda em degradê que respeita o arredondamento) */
+  .gold-frame {
+    border: 2px solid transparent;
+    background:
+      linear-gradient(#0d0b09, #0d0b09) padding-box,
+      linear-gradient(135deg, #a87b22 0%, #f0d27a 25%, #fff6d8 35%, #d4a940 55%, #a87b22 80%, #f0d27a 100%) border-box;
+  }
+
   .bg-gradient-card {
     background: linear-gradient(145deg, rgba(36, 30, 23, 0.9) 0%, rgba(23, 19, 15, 0.9) 100%);
   }

@@ -136,6 +136,23 @@ test('loja: monta o pedido e envia pelo WhatsApp', async ({ page }) => {
   await expect(cart).toBeHidden();
 });
 
+test('atalhos dourados levam para as seções certas', async ({ page }) => {
+  await page.goto('/');
+  const quick = page.getByRole('region', { name: 'Atalhos' });
+  await expect(quick.getByRole('link')).toHaveText([
+    'Agendar',
+    'Serviços',
+    'Produtos',
+    'Equipe',
+    'WhatsApp',
+    'Como chegar',
+  ]);
+  await expect(quick.getByRole('link', { name: 'WhatsApp' })).toHaveAttribute('href', /wa\.me\/5515999648684/);
+  await expect(quick.getByRole('link', { name: 'Como chegar' })).toHaveAttribute('target', '_blank');
+  await quick.getByRole('link', { name: 'Agendar' }).click();
+  await expect(page).toHaveURL(/#booking$/);
+});
+
 test('endereço inexistente mostra a página 404', async ({ page }) => {
   await page.goto('/pagina-que-nao-existe');
   await expect(page.getByRole('heading', { name: '404' })).toBeVisible();
