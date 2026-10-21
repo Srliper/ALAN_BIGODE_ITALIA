@@ -19,6 +19,9 @@ export const business = {
   siteUrl: '',
   // Imagem que aparece ao compartilhar o link (ideal 1200x630). Pode ser '/og.jpg' se colocar em public/.
   ogImage: 'https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=1200&h=630&fit=crop&q=80',
+  // Login do painel: o usuário digita '@alanbigode' e o site entra no Supabase como 'alanbigode@<este domínio>'.
+  // O usuário precisa ser criado no Supabase com esse e-mail (veja ADMIN.md).
+  adminLoginDomain: 'barbeariabigodeitalia.com',
   hoursLabel: 'Terça a Sábado, 8h30 – 21h',
   // Horário de abertura e fechamento (HH:MM). O último horário oferecido termina até o fechamento.
   openTime: '08:30',
@@ -37,6 +40,13 @@ export const instagramUrl = (value: string) => {
 
 // 'https://www.instagram.com/alan70bedim/' -> '@alan70bedim'
 export const instagramHandle = (url: string) => '@' + url.replace(/\/+$/, '').split('/').pop();
+
+// Login do painel: '@alanbigode' -> 'alanbigode@barbeariabigodeitalia.com'. Um e-mail completo é usado como está.
+export const loginToEmail = (login: string) => {
+  const value = login.trim().toLowerCase();
+  if (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(value)) return value;
+  return `${value.replace(/^@/, '')}@${business.adminLoginDomain}`;
+};
 
 export const weekdayNames = ['domingo', 'segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado'];
 
