@@ -153,6 +153,27 @@ test('atalhos dourados levam para as seções certas', async ({ page }) => {
   await expect(page).toHaveURL(/#booking$/);
 });
 
+test('topo usa o vídeo da barbearia, sem som e em loop', async ({ page }) => {
+  await page.goto('/');
+  const video = page.locator('#home video');
+  await expect(video).toHaveAttribute('poster', '/video/hero-capa.jpg');
+  expect(await video.evaluate((v: HTMLVideoElement) => v.muted && v.loop && v.autoplay && v.playsInline)).toBe(true);
+  for (const src of ['/video/hero.mp4', '/video/hero.webm', '/video/hero-capa.jpg']) {
+    const res = await page.request.get(src);
+    expect(res.ok()).toBe(true);
+  }
+});
+
+test('com "reduzir movimento" no sistema, mostra só a imagem de capa', async ({ browser }) => {
+  const context = await browser.newContext({ reducedMotion: 'reduce' });
+  await mockSupabase(context);
+  const page = await context.newPage();
+  await page.goto('/');
+  await expect(page.locator('#home video')).toHaveCount(0);
+  await expect(page.locator('#home img[src="/video/hero-capa.jpg"]')).toHaveCount(1);
+  await context.close();
+});
+
 test('endereço inexistente mostra a página 404', async ({ page }) => {
   await page.goto('/pagina-que-nao-existe');
   await expect(page.getByRole('heading', { name: '404' })).toBeVisible();
