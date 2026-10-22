@@ -153,6 +153,51 @@ test('atalhos dourados levam para as seções certas', async ({ page }) => {
   await expect(page).toHaveURL(/#booking$/);
 });
 
+test('topo usa o vídeo da barbearia, sem som e em loop', async ({ page }) => {
+  await page.goto('/');
+  const video = page.locator('#home video');
+  await expect(video).toHaveAttribute('poster', '/video/hero-capa.jpg');
+  expect(await video.evaluate((v: HTMLVideoElement) => v.muted && v.loop && v.autoplay && v.playsInline)).toBe(true);
+  for (const src of ['/video/hero.mp4', '/video/hero.webm', '/video/hero-capa.jpg']) {
+    const res = await page.request.get(src);
+    expect(res.ok()).toBe(true);
+  }
+});
+
+test('com "reduzir movimento" no sistema, mostra só a imagem de capa', async ({ browser }) => {
+  const context = await browser.newContext({ reducedMotion: 'reduce' });
+  await mockSupabase(context);
+  const page = await context.newPage();
+  await page.goto('/');
+  await expect(page.locator('#home video')).toHaveCount(0);
+  await expect(page.locator('#home img[src="/video/hero-capa.jpg"]')).toHaveCount(1);
+  // A sequência vira imagem parada com as frases
+  await expect(page.locator('#experience canvas')).toHaveCount(0);
+  await expect(page.locator('#experience').getByRole('link', { name: 'Agendar agora' })).toBeVisible();
+  await context.close();
+});
+
+test('sequência avança os quadros com a rolagem e termina no botão de agendar', async ({ page, isMobile }) => {
+  await page.goto('/');
+  const section = page.locator('#experience');
+  await expect(section).toHaveAttribute('data-frame', '0');
+  const top = await section.evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
+  const height = await section.evaluate((el) => el.offsetHeight - window.innerHeight);
+
+  await page.evaluate((y) => window.scrollTo(0, y), top + height / 2);
+  await expect.poll(async () => Number(await section.getAttribute('data-frame'))).toBeGreaterThan(30);
+  await expect(section.getByText('Cada detalhe pensado para você relaxar')).toBeVisible();
+
+  await page.evaluate((y) => window.scrollTo(0, y), top + height);
+  const last = isMobile ? '95' : '143';
+  await expect(section).toHaveAttribute('data-frame', last);
+  await expect(section.getByRole('link', { name: 'Agendar agora' })).toBeVisible();
+
+  const set = isMobile ? 'celular' : 'desktop';
+  expect((await page.request.get(`/sequencia/${set}/001.webp`)).ok()).toBe(true);
+  expect((await page.request.get(`/sequencia/${set}/${isMobile ? '096' : '144'}.webp`)).ok()).toBe(true);
+});
+
 test('endereço inexistente mostra a página 404', async ({ page }) => {
   await page.goto('/pagina-que-nao-existe');
   await expect(page.getByRole('heading', { name: '404' })).toBeVisible();

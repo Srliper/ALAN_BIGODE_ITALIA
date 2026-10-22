@@ -142,3 +142,96 @@ Instagram).
 | Cores erradas (azul, roxo) | Acrescente `only black and warm gold colors` no começo do prompt. |
 | Vídeo tremendo | Peça `static camera` ou `very slow push-in` e tire `dynamic`/`fast` do prompt. |
 | Ficou com cara de desenho | Acrescente `photorealistic, cinematic, studio product shot`. |
+
+---
+
+# Versão para o Google Flow (Veo)
+
+O Flow gera clipes de **8 segundos** e o Veo 3 também cria o **som** a partir do prompt. Não existe campo de prompt
+negativo: o que não pode aparecer vai escrito no próprio prompt, como no fim de cada um abaixo.
+
+**Configuração (ícone de ajustes ao lado do campo do prompt):**
+- **Modelo:** Veo 3 *Quality* para o resultado final; Veo 3 *Fast* para testar ideias gastando menos créditos
+- **Proporção:** 16:9 para o site; 9:16 para Reels e Stories
+- **Resultados por prompt:** 2 a 4, para escolher o melhor
+
+**Modos do Flow usados aqui:**
+- **Frames to Video:** você envia a imagem do **último quadro** (*end frame*) e o Veo anima até chegar nela. É o
+  melhor modo para o logo sair perfeito.
+- **Text to Video:** só o texto, para cenas sem logo (ambiente da barbearia).
+- **Scenebuilder:** junta os clipes em sequência (botão **Add to scene**) e exporta tudo num vídeo só.
+
+## Flow 1 — Intro do logo (Frames to Video, 8 s)
+
+- **Modo:** Frames to Video
+- **Último quadro:** `public/marca/logo-horizontal-fundo-escuro.png` (16:9) ou
+  `public/marca/logo-vertical-fundo-escuro.png` (9:16)
+- **Primeiro quadro:** deixe vazio
+
+```
+A cinematic luxury logo reveal for a classic barbershop. Open on total darkness with faint warm haze. A thin beam of
+golden light sweeps slowly from left to right and reveals a polished gold emblem on a black background: a round gold
+seal with a gold crown on top and a classic curled handlebar mustache in the center, with a tiny green, white and red
+stripe below it. Small golden sparkles glint on the crown tips and on the mustache curls, soft smoke drifts at the
+bottom of the frame. The camera slowly pushes in and settles, ending exactly on the provided final frame, perfectly
+centered and still. The emblem keeps its exact shape and colors the whole time, perfectly symmetric, never morphing.
+Black and warm gold palette, premium, elegant, photorealistic studio lighting.
+Audio: a deep cinematic whoosh as the light sweeps, the crisp metallic "shing" of a straight razor when the emblem
+shines, then a short low ambient tone. No music with vocals, no dialogue.
+Do not add any extra text, letters, watermarks, people or other objects.
+```
+
+## Flow 2 — Ambiente da barbearia para o fundo do site (Text to Video, 8 s, 16:9)
+
+Inspirado nas referências: ambiente escuro, lâmpadas aparentes, cadeiras de couro preto, detalhes dourados.
+
+```
+A slow, smooth cinematic dolly shot gliding through an empty luxury classic barbershop at night. Black leather and
+chrome vintage barber chairs, dark wood counters with rows of amber grooming product bottles, large mirrors with thin
+gold frames, warm Edison bulb pendant lights and soft golden LED strips under the shelves, dark textured walls,
+black and white checkered floor reflecting the lights, light haze in the air catching soft light rays. Very slow
+forward camera movement, shallow depth of field, rich black, brown and warm gold color palette, moody, elegant,
+photorealistic. The camera movement is calm and steady so the clip can loop.
+Audio: quiet room ambience only.
+No people, no visible text, signs, letters or logos anywhere.
+```
+
+**Para o site:** baixe o vídeo, tire o som e mande para mim (MP4, até 8 MB). O site já escreve o título por cima.
+
+## Flow 3 — Reels (3 clipes de 8 s, 9:16) montados no Scenebuilder
+
+Gere cada um com **Text to Video** em 9:16 e junte na ordem com **Add to scene**. Termine com o **Flow 1** em 9:16.
+
+**Clipe A — Navalha**
+```
+Extreme close-up, slow motion: a barber's straight razor with a black handle glides along the clean edge of a
+man's beard, a little white shaving foam, warm golden side light against a dark background, shallow depth of field,
+luxury classic barbershop, photorealistic. Audio: the soft scrape of the razor, calm ambience.
+No visible text or letters.
+```
+
+**Clipe B — Degradê**
+```
+Close-up, slow motion: black and gold electric clippers create a smooth skin fade on the side of a man's head, tiny
+hair particles float in the warm golden backlight, dark moody barbershop background with blurred Edison bulbs,
+photorealistic, cinematic. Audio: the steady buzz of clippers. No visible text or letters, the face stays out of frame.
+```
+
+**Clipe C — Toalha quente**
+```
+Medium close-up, slow motion: a barber's hands fold a steaming hot white towel next to a black leather barber chair,
+steam swirls in warm golden light, dark wood and chrome details in the background, cozy premium atmosphere,
+photorealistic. Audio: soft steam and quiet ambience. No visible text or letters.
+```
+
+**Depois, no CapCut:** coloque os textos ("Acabamento na navalha", "Degradê perfeito", "Experiência completa") e, no
+final, "Agende pelo WhatsApp · (15) 99964-8684" e "@barbearia_bigode_italia".
+
+## Se o Flow errar
+
+| Problema | O que fazer |
+|---|---|
+| O logo mudou de forma | Use **Frames to Video** com o logo como *último quadro* e gere de novo. Encurte a descrição do emblema. |
+| Apareceram letras inventadas | Confira se o prompt termina com a frase "Do not add any extra text…". Gere de novo. |
+| Movimento rápido demais | Troque "pushes in" por "stays almost still with a very subtle push-in". |
+| O som ficou ruim | Tire o som no CapCut e use uma música da biblioteca dele. |

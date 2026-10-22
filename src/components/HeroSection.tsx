@@ -1,17 +1,36 @@
 import { ChevronDown, MapPin, Clock } from 'lucide-react';
 import { business } from '@/config';
 
+const reducedMotion = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+
 const HeroSection = () => {
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
-      {/* Para usar um vídeo próprio, coloque-o em /public/hero.mp4 e troque esta imagem por um <video>. */}
-      <img
-        src="https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=1920&q=80"
-        alt=""
-        aria-hidden="true"
-        fetchPriority="high"
-        className="absolute inset-0 w-full h-full object-cover z-0 opacity-60 animate-ken-burns"
-      />
+      {/* Vídeo gerado no Google Flow (docs/PROMPT-VIDEO.md, Flow 2), em loop vai-e-volta, sem som.
+          Quem pediu menos movimento no sistema vê só a imagem de capa. */}
+      {reducedMotion ? (
+        <img
+          src="/video/hero-capa.jpg"
+          alt=""
+          aria-hidden="true"
+          fetchPriority="high"
+          className="absolute inset-0 w-full h-full object-cover z-0 opacity-90"
+        />
+      ) : (
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          poster="/video/hero-capa.jpg"
+          aria-hidden="true"
+          className="absolute inset-0 w-full h-full object-cover z-0 opacity-90"
+        >
+          <source src="/video/hero.webm" type="video/webm" />
+          <source src="/video/hero.mp4" type="video/mp4" />
+        </video>
+      )}
 
       <div className="video-overlay" />
 
