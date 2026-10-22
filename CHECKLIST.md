@@ -31,6 +31,7 @@ Legenda: ✅ feito · 🔧 você precisa fazer · 📋 precisa de material/decis
 - 📋 Colocar preço e foto dos produtos no painel e marcar "Mostrar no site"
 - ✅ Logo próprio (coroa + bigode + bandeira italiana) aplicado no site, favicon, ícone do celular e imagem de compartilhamento — arquivos em `public/marca/`
 - ✅ Prompts de vídeo para animar o logo e fazer Reels: [docs/PROMPT-VIDEO.md](docs/PROMPT-VIDEO.md)
+- ✅ Seção "A experiência": sequência do Frameia que avança com a rolagem (144 quadros no computador, 96 no celular, em WebP)
 - ✅ Vídeo de fundo do topo do site (gerado no Google Flow), em loop, sem som, com imagem de capa
 - 📋 Intro do logo (Flow 1) e Reels (Flow 3) no Google Flow — prompts em `docs/PROMPT-VIDEO.md`
 - ✅ Mais opções de corte (21: low/mid/high/taper fade, navalhado, undercut, moicano, mullet, crop, infantil, freestyle…)
@@ -61,5 +62,5 @@ Legenda: ✅ feito · 🔧 você precisa fazer · 📋 precisa de material/decis
 - ✅ Removido react-router-dom (site mais leve); painel carregado só em `/admin`
 - ✅ Galeria ampliada acessível por teclado
 - ✅ ESLint, typecheck e CI no GitHub Actions
-- ✅ 47 testes automáticos do site e do painel (computador e celular)
+- ✅ 49 testes automáticos do site e do painel (computador e celular)
 - 🔧 Horário de funcionamento e telefone continuam em `src/config.ts` (não estão no painel)

@@ -1,6 +1,7 @@
 import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
 import QuickLinks from '@/components/QuickLinks';
+import ScrollSequence from '@/components/ScrollSequence';
 import ServicesSection from '@/components/ServicesSection';
 import GallerySection from '@/components/GallerySection';
 import AboutSection from '@/components/AboutSection';
@@ -19,6 +20,7 @@ const Index = () => {
         <HeroSection />
         <QuickLinks />
         <ServicesSection />
+        <ScrollSequence />
         <GallerySection />
         <AboutSection />
         <TeamSection />
