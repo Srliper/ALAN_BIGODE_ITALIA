@@ -164,8 +164,8 @@ negativo: o que não pode aparecer vai escrito no próprio prompt, como no fim d
 ## Flow 1 — Intro do logo (Frames to Video, 8 s)
 
 - **Modo:** Frames to Video
-- **Último quadro:** `public/marca/logo-horizontal-fundo-escuro.png` (16:9) ou
-  `public/marca/logo-vertical-fundo-escuro.png` (9:16)
+- **Último quadro:** `public/marca/intro-final-16x9.png` (16:9) ou `public/marca/intro-final-9x16.png` (9:16).
+  A imagem precisa ter a mesma proporção do vídeo; os logos horizontal/vertical comuns seriam cortados.
 - **Primeiro quadro:** deixe vazio
 
 ```
