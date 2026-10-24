@@ -11,10 +11,12 @@ import BookingSection from '@/components/BookingSection';
 import ContactSection from '@/components/ContactSection';
 import Footer from '@/components/Footer';
 import WhatsAppButton from '@/components/WhatsAppButton';
+import IntroSplash from '@/components/IntroSplash';
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
+      <IntroSplash />
       <Navbar />
       <main>
         <HeroSection />

@@ -129,7 +129,10 @@ const matches = (row: Row, params: URLSearchParams) => {
  * Simula o Supabase (login, tabelas e upload de fotos) para todas as abas do contexto,
  * com um banco em memória compartilhado — o que o painel salva aparece no site.
  */
-export async function mockSupabase(context: BrowserContext, options: { withoutProducts?: boolean } = {}) {
+export async function mockSupabase(
+  context: BrowserContext,
+  options: { withoutProducts?: boolean; showIntro?: boolean } = {},
+) {
   const db: Partial<ReturnType<typeof seed>> = seed();
   // Simula um Supabase em que o schema.sql novo (com a tabela products) ainda não foi rodado
   if (options.withoutProducts) delete db.products;
@@ -138,6 +141,9 @@ export async function mockSupabase(context: BrowserContext, options: { withoutPr
 
   const json = (route: Route, body: unknown, status = 200) =>
     route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(body) });
+
+  // A abertura (IntroSplash) cobre a página; só os testes dela a deixam aparecer
+  if (!options.showIntro) await context.addInitScript(() => localStorage.setItem('intro-vista', '1'));
 
   // Sem internet nos testes: imagens externas, fontes e mapa recebem respostas vazias
   await context.route(/images\.unsplash\.com|fonts\.(googleapis|gstatic)\.com|google\.com\/maps/, (route) =>

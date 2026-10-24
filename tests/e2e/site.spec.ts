@@ -166,13 +166,15 @@ test('topo usa o vídeo da barbearia, sem som e em loop', async ({ page }) => {
 
 test('com "reduzir movimento" no sistema, mostra só a imagem de capa', async ({ browser }) => {
   const context = await browser.newContext({ reducedMotion: 'reduce' });
-  await mockSupabase(context);
+  await mockSupabase(context, { showIntro: true });
   const page = await context.newPage();
   await page.goto('/');
   await expect(page.locator('#home video')).toHaveCount(0);
   await expect(page.locator('#home img[src="/video/hero-capa.jpg"]')).toHaveCount(1);
   // A sequência vira imagem parada com as frases
   await expect(page.locator('#experience canvas')).toHaveCount(0);
+  // Nem a abertura aparece
+  await expect(page.getByRole('dialog', { name: /Abertura/ })).toHaveCount(0);
   await expect(page.locator('#experience').getByRole('link', { name: 'Agendar agora' })).toBeVisible();
   await context.close();
 });
@@ -196,6 +198,43 @@ test('sequência avança os quadros com a rolagem e termina no botão de agendar
   const set = isMobile ? 'celular' : 'desktop';
   expect((await page.request.get(`/sequencia/${set}/001.webp`)).ok()).toBe(true);
   expect((await page.request.get(`/sequencia/${set}/${isMobile ? '096' : '144'}.webp`)).ok()).toBe(true);
+});
+
+test('abertura: aparece na primeira visita, pode pular e não volta', async ({ browser, isMobile, viewport }) => {
+  const context = await browser.newContext({ viewport, isMobile });
+  await mockSupabase(context, { showIntro: true });
+  const page = await context.newPage();
+  await page.goto('/');
+  const intro = page.getByRole('dialog', { name: /Abertura/ });
+  await expect(intro).toBeVisible();
+  await expect(intro.locator('video source').first()).toHaveAttribute(
+    'src',
+    isMobile ? '/video/intro-celular.webm' : '/video/intro.webm',
+  );
+  await expect(intro.getByRole('button', { name: 'Pular' })).toBeFocused();
+  await intro.getByRole('button', { name: 'Pular' }).click();
+  await expect(intro).toBeHidden();
+  await page.reload();
+  await expect(page.locator('#services')).toBeVisible();
+  await expect(page.getByRole('dialog', { name: /Abertura/ })).toHaveCount(0);
+  // ?intro=1 força a abertura de novo (para conferir)
+  await page.goto('/?intro=1');
+  await expect(page.getByRole('dialog', { name: /Abertura/ })).toBeVisible();
+  await context.close();
+});
+
+test('abertura termina sozinha quando o vídeo acaba', async ({ browser }) => {
+  const context = await browser.newContext();
+  await mockSupabase(context, { showIntro: true });
+  const page = await context.newPage();
+  await page.goto('/');
+  const intro = page.getByRole('dialog', { name: /Abertura/ });
+  await expect(intro).toBeVisible();
+  await expect.poll(() => intro.locator('video').evaluate((v: HTMLVideoElement) => v.currentTime)).toBeGreaterThan(0);
+  await expect(intro).toBeHidden({ timeout: 15000 });
+  for (const src of ['/video/intro.mp4', '/video/intro.webm', '/video/intro-celular.mp4', '/video/intro-celular.webm'])
+    expect((await page.request.get(src)).ok()).toBe(true);
+  await context.close();
 });
 
 test('endereço inexistente mostra a página 404', async ({ page }) => {
